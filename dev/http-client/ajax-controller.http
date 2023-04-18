@@ -1,0 +1,5 @@
+POST http://prestashop.local/index.php?fc=module&module=tagconciergefree&controller=ajax&ajax=true
+Content-Type: application/x-www-form-urlencoded
+
+action=getCart
+###
