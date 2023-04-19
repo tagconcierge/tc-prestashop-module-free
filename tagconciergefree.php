@@ -101,6 +101,11 @@ class TagConciergeFree extends Module
         $output = '';
 
         if (Tools::isSubmit('submit_tc')) {
+            // get actual value of PS_USE_HTMLPURIFIER
+            $usePurifier = PrestaShopConfiguration::get('PS_USE_HTMLPURIFIER');
+            // disable it to allow store gtm snippets in configuration
+            PrestaShopConfiguration::updateValue('PS_USE_HTMLPURIFIER', 0);
+
             $state = Tools::getValue(ConfigurationVO::STATE);
             $containerHead = Tools::getValue(ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD);
             $containerBody = Tools::getValue(ConfigurationVO::GTM_CONTAINER_SNIPPET_BODY);
@@ -123,6 +128,8 @@ class TagConciergeFree extends Module
 
                 $output .= $this->displayConfirmation('Settings updated.');
             }
+            // restore original value of PS_USE_HTMLPURIFIER
+            PrestaShopConfiguration::updateValue('PS_USE_HTMLPURIFIER', $usePurifier);
         }
 
         $helper = new HelperForm();
