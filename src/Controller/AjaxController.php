@@ -21,7 +21,7 @@ class AjaxController extends \ModuleFrontController
 
         ob_end_clean();
         header('Content-Type: application/json');
-        $this->ajaxDie(json_encode($response, JSON_THROW_ON_ERROR, 512));
+        $this->ajaxDie(json_encode($response));
     }
 
     private function getCart(): array

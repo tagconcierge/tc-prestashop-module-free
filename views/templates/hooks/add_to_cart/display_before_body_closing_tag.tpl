@@ -9,7 +9,7 @@
         if (null === tagConcierge.lastPrestashopCartFromResponse) {
           jQuery.ajax({
             type: 'POST',
-            url: '/index.php?fc=module&module=tag_concierge&controller=ajax&ajax=true',
+            url: '/index.php?fc=module&module=tagconciergefree&controller=ajax&ajax=true',
             data: 'action=getCart',
             async: false,
             success: function (d) {
