@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2023-06-02
+
+### Added
+- support for Przelewy24 payment module
+
+### Changed
+
+### Fixed
+
 ## [1.0.1] - 2023-04-19
 GTM body snippet should be provided again in module configuration after upgrade.
 
