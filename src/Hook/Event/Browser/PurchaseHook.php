@@ -9,20 +9,22 @@ use PrestaShop\Module\TagConciergeFree\Model\Order;
 
 class PurchaseHook extends AbstractHook
 {
-    private $eventFired = false;
-
     /** @var array */
     public const HOOKS = [
         Hooks::DISPLAY_ORDER_CONFIRMATION => [
             'addDataElementInOrderConfirmationPage',
         ],
-        Hooks::DISPLAY_BEFORE_BODY_CLOSING_TAG => [
+        Hooks::DISPLAY_AFTER_BODY_OPENING_TAG => [
             'p24Compatibility',
         ],
     ];
 
     public function addDataElementInOrderConfirmationPage(array $data): string
     {
+        if (true === $this->isP24ConfirmationPage()) {
+            return '';
+        }
+
         /** @var PrestaShopOrder $orderObject */
         $orderObject = $data['order'];
 
@@ -31,15 +33,7 @@ class PurchaseHook extends AbstractHook
 
     public function p24Compatibility(array $data): string
     {
-        $controller = $this->getContext()->controller;
-
-        if (null === $controller) {
-            return '';
-        }
-
-        $controllerClass = get_class($controller);
-
-        if ('Przelewy24paymentConfirmationModuleFrontController' !== $controllerClass) {
+        if (false === $this->isP24ConfirmationPage()) {
             return '';
         }
 
@@ -56,19 +50,26 @@ class PurchaseHook extends AbstractHook
 
     private function handlePurchaseEvent(PrestaShopOrder $order): string
     {
-        if (true === $this->eventFired) {
-            return '';
-        }
-
         $orderModel = Order::fromOrderObject($order);
 
         $this->getContext()->smarty->assign('tc_order', $orderModel->toArray());
-
-        $this->eventFired = true;
 
         return $this->module->display(
             \TagConciergeFree::MODULE_FILE,
             'views/templates/hooks/purchase/display_order_confirmation.tpl'
         );
+    }
+
+    private function isP24ConfirmationPage(): bool
+    {
+        $controller = $this->getContext()->controller;
+
+        if (null === $controller) {
+            return false;
+        }
+
+        $controllerClass = get_class($controller);
+
+        return 'przelewy24paymentconfirmationmodulefrontcontroller' === strtolower($controllerClass);
     }
 }
