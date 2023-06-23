@@ -6,6 +6,7 @@ use Order as PrestaShopOrder;
 use PrestaShop\Module\TagConciergeFree\Hook\AbstractHook;
 use PrestaShop\Module\TagConciergeFree\Hook\Hooks;
 use PrestaShop\Module\TagConciergeFree\Model\Order;
+use TagConciergeFree;
 
 class PurchaseHook extends AbstractHook
 {
@@ -21,7 +22,7 @@ class PurchaseHook extends AbstractHook
 
     public function addDataElementInOrderConfirmationPage(array $data): string
     {
-        if (true === $this->isP24ConfirmationPage()) {
+        if (true === $this->isP24ConfirmationPage() || true === $this->isP24SuccessPage()) {
             return '';
         }
 
@@ -33,14 +34,24 @@ class PurchaseHook extends AbstractHook
 
     public function p24Compatibility(array $data): string
     {
-        if (false === $this->isP24ConfirmationPage()) {
+        if (false === $this->isP24ConfirmationPage() && false === $this->isP24SuccessPage()) {
             return '';
         }
 
-        $orderId = PrestaShopOrder::getIdByCartId($this->getContext()->cart->id);
+        $cartId = $this->isP24ConfirmationPage() ? $this->getContext()->cart->id : $this->getContext()->cookie->tc_cart_id;
+
+        if (true === $this->isP24ConfirmationPage()) {
+            $this->getContext()->cookie->tc_cart_id = $cartId;
+        }
+
+        $orderId = PrestaShopOrder::getIdByCartId($cartId);
 
         if (false === $orderId) {
             return '';
+        }
+
+        if (true === $this->isP24SuccessPage()) {
+            $this->getContext()->cookie->tc_cart_id = null;
         }
 
         $order = new PrestaShopOrder($orderId);
@@ -50,26 +61,40 @@ class PurchaseHook extends AbstractHook
 
     private function handlePurchaseEvent(PrestaShopOrder $order): string
     {
+        if ($order->id === (int) $this->getContext()->cookie->tc_tracked_purchase_id) {
+            return '';
+        }
+
         $orderModel = Order::fromOrderObject($order);
 
         $this->getContext()->smarty->assign('tc_order', $orderModel->toArray());
 
+        $this->getContext()->cookie->tc_tracked_purchase_id = $order->id;
+
         return $this->module->display(
-            \TagConciergeFree::MODULE_FILE,
+            TagConciergeFree::MODULE_FILE,
             'views/templates/hooks/purchase/display_order_confirmation.tpl'
         );
     }
 
     private function isP24ConfirmationPage(): bool
     {
+        return 'przelewy24paymentconfirmationmodulefrontcontroller' === strtolower($this->getControllerClass());
+    }
+
+    private function isP24SuccessPage(): bool
+    {
+        return 'przelewy24paymentsuccessfulmodulefrontcontroller' === strtolower($this->getControllerClass());
+    }
+
+    private function getControllerClass(): string
+    {
         $controller = $this->getContext()->controller;
 
         if (null === $controller) {
-            return false;
+            return '';
         }
 
-        $controllerClass = get_class($controller);
-
-        return 'przelewy24paymentconfirmationmodulefrontcontroller' === strtolower($controllerClass);
+        return get_class($controller);
     }
 }
