@@ -48,6 +48,6 @@ class OrderProduct extends Product
         return $orderProduct
             ->setStockQuantity($array['current_stock'])
             ->setOrderQuantity($array['cart_quantity'])
-            ->setPrice($array['total_price_tax_incl']);
+            ->setPrice($array['unit_price_tax_incl']);
     }
 }
