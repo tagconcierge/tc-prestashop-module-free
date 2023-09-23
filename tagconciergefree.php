@@ -28,8 +28,6 @@ class TagConciergeFree extends Module
     /** @var string */
     const MODULE_FILE = _PS_MODULE_DIR_ . 'tagconciergefree/tagconciergefree.php';
 
-    private $configurationVO = ConfigurationVO::class;
-
     private $pro = false;
 
     /**
