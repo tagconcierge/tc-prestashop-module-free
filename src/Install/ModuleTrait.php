@@ -44,7 +44,7 @@ trait ModuleTrait
     public function getContent(): string
     {
         $this->context->smarty->assign('module_dir', $this->_path);
-        $this->context->smarty->assign('instance_uuid', PrestaShopConfiguration::get(ConfigurationVO::INSTANCE_UUID));
+        $this->context->smarty->assign('instance_uuid', PrestaShopConfiguration::get($this->configurationVO::INSTANCE_UUID));
         $this->context->smarty->assign('plugin_version', $this->version);
 
         $output = '';
@@ -55,19 +55,19 @@ trait ModuleTrait
             // disable it to allow store gtm snippets in configuration
             PrestaShopConfiguration::updateValue('PS_USE_HTMLPURIFIER', 0);
 
-            $state = PrestaShopTools::getValue(ConfigurationVO::STATE);
-            $containerHead = PrestaShopTools::getValue(ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD);
-            $containerBody = PrestaShopTools::getValue(ConfigurationVO::GTM_CONTAINER_SNIPPET_BODY);
+            $state = PrestaShopTools::getValue($this->configurationVO::STATE);
+            $containerHead = PrestaShopTools::getValue($this->configurationVO::GTM_CONTAINER_SNIPPET_HEAD);
+            $containerBody = PrestaShopTools::getValue($this->configurationVO::GTM_CONTAINER_SNIPPET_BODY);
 
             $htmlFields = [
-                ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD,
-                ConfigurationVO::GTM_CONTAINER_SNIPPET_BODY,
+                $this->configurationVO::GTM_CONTAINER_SNIPPET_HEAD,
+                $this->configurationVO::GTM_CONTAINER_SNIPPET_BODY,
             ];
 
             if ($state && (true === empty($containerHead) || true === empty($containerBody))) {
                 $output .= $this->displayError('Please, provide valid GTM snippets.');
             } else {
-                foreach (array_keys(ConfigurationVO::getFields()) as $key) {
+                foreach (array_keys($this->configurationVO::getFields()) as $key) {
                     PrestaShopConfiguration::updateValue(
                         $key,
                         PrestaShopTools::getValue($key),
@@ -98,7 +98,7 @@ trait ModuleTrait
         $vars = [];
         $input = [];
 
-        foreach (ConfigurationVO::getFields() as $key => $value) {
+        foreach ($this->configurationVO::getFields() as $key => $value) {
             $vars[$key] = PrestaShopConfiguration::get($key);
 
             $value['name'] = $key;
@@ -132,7 +132,7 @@ trait ModuleTrait
 
     private function isModuleActive(): bool
     {
-        return '1' === PrestaShopConfiguration::get(ConfigurationVO::STATE);
+        return '1' === PrestaShopConfiguration::get($this->configurationVO::STATE);
     }
 
     private function setupHooks(): void
@@ -146,7 +146,7 @@ trait ModuleTrait
 
     public static function isDebug(): bool
     {
-        return '1' === \Configuration::get(ConfigurationVO::DEBUG);
+        return '1' === \Configuration::get($this->configurationVO::DEBUG);
     }
 
     public function __call(string $name, array $arguments)

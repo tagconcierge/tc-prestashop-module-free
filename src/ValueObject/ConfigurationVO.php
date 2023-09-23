@@ -22,7 +22,7 @@ class ConfigurationVO
     /**
      * @var array
      */
-    private static $fields = [
+    protected static $fields = [
         self::STATE => [
             'type' => 'switch',
             'label' => 'State',
@@ -75,6 +75,6 @@ class ConfigurationVO
 
     public static function getFields(): array
     {
-        return self::$fields;
+        return static::$fields;
     }
 }

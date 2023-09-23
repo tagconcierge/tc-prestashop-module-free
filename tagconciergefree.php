@@ -40,6 +40,10 @@ class TagConciergeFree extends Module
      */
     private $hookProvider;
 
+    private $configurationVO = ConfigurationVO::class;
+
+    private $pro = false;
+
     /**
      * TagConcierge constructor.
      */
