@@ -3,13 +3,17 @@
 namespace PrestaShop\Module\TagConciergeFree\Hook\Event\Browser;
 
 use Order as PrestaShopOrder;
-use PrestaShop\Module\TagConciergeFree\Hook\AbstractHook;
+use PrestaShop\Module\TagConciergeFree\Hook\Event\AbstractEcommerceEventHook;
 use PrestaShop\Module\TagConciergeFree\Hook\Hooks;
 use PrestaShop\Module\TagConciergeFree\Model\Order;
 use TagConciergeFree;
 
-class PurchaseHook extends AbstractHook
+class PurchaseHook extends AbstractEcommerceEventHook
 {
+    protected $eventName = 'purchase';
+
+    protected $eventType = 'browser';
+
     /** @var array */
     public const HOOKS = [
         Hooks::DISPLAY_ORDER_CONFIRMATION => [

@@ -18,7 +18,7 @@ class Installer
             Configuration::updateValue($key, $boolean ? false : '');
         }
 
-        if (false === \Configuration::get(ConfigurationVO::INSTANCE_UUID)) {
+        if (false === Configuration::get(ConfigurationVO::INSTANCE_UUID)) {
             Configuration::updateValue(ConfigurationVO::INSTANCE_UUID, $this->generateUuid());
         }
 

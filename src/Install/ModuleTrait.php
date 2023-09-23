@@ -3,11 +3,12 @@
 namespace PrestaShop\Module\TagConciergeFree\Install;
 
 use Configuration as PrestaShopConfiguration;
+use PrestaShop\Module\TagConciergeFree\Hook\Event\AbstractEcommerceEventHook;
+use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 use PrestaShopLogger;
+use RuntimeException;
 use Tools as PrestaShopTools;
 use PrestaShop\Module\TagConciergeFree\Hook\HookProvider;
-use PrestaShop\Module\TagConciergeFree\Install\InstallerFactory;
-use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 
 trait ModuleTrait
 {
@@ -21,7 +22,6 @@ trait ModuleTrait
 
     private function init()
     {
-
         @define('TC_VERSION', $this->version);
 
         $this->hookProvider = new HookProvider($this);
@@ -50,10 +50,14 @@ trait ModuleTrait
         return $installer->uninstall($this);
     }
 
+    /**
+     * @throws \PrestaShopException
+     * @throws \SmartyException
+     */
     public function getContent(): string
     {
         $this->context->smarty->assign('module_dir', $this->_path);
-        $this->context->smarty->assign('instance_uuid', PrestaShopConfiguration::get($this->configurationVO::INSTANCE_UUID));
+        $this->context->smarty->assign('instance_uuid', PrestaShopConfiguration::get(ConfigurationVO::INSTANCE_UUID));
         $this->context->smarty->assign('plugin_version', $this->version);
 
         $output = '';
@@ -64,19 +68,19 @@ trait ModuleTrait
             // disable it to allow store gtm snippets in configuration
             PrestaShopConfiguration::updateValue('PS_USE_HTMLPURIFIER', 0);
 
-            $state = PrestaShopTools::getValue($this->configurationVO::STATE);
-            $containerHead = PrestaShopTools::getValue($this->configurationVO::GTM_CONTAINER_SNIPPET_HEAD);
-            $containerBody = PrestaShopTools::getValue($this->configurationVO::GTM_CONTAINER_SNIPPET_BODY);
+            $state = PrestaShopTools::getValue(ConfigurationVO::STATE);
+            $containerHead = PrestaShopTools::getValue(ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD);
+            $containerBody = PrestaShopTools::getValue(ConfigurationVO::GTM_CONTAINER_SNIPPET_BODY);
 
             $htmlFields = [
-                $this->configurationVO::GTM_CONTAINER_SNIPPET_HEAD,
-                $this->configurationVO::GTM_CONTAINER_SNIPPET_BODY,
+                ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD,
+                ConfigurationVO::GTM_CONTAINER_SNIPPET_BODY,
             ];
 
             if ($state && (true === empty($containerHead) || true === empty($containerBody))) {
                 $output .= $this->displayError('Please, provide valid GTM snippets.');
             } else {
-                foreach (array_keys($this->configurationVO::getFields()) as $key) {
+                foreach (array_keys(ConfigurationVO::getFields()) as $key) {
                     PrestaShopConfiguration::updateValue(
                         $key,
                         PrestaShopTools::getValue($key),
@@ -90,6 +94,22 @@ trait ModuleTrait
             PrestaShopConfiguration::updateValue('PS_USE_HTMLPURIFIER', $usePurifier);
         }
 
+        if (PrestaShopTools::isSubmit('submit_tc_events')) {
+            foreach (ConfigurationVO::getEvents() as $event => $isPro) {
+                $key = sprintf('TC_EVENT_STATE_BROWSER_%s', strtoupper($event));
+
+                PrestaShopConfiguration::updateValue(
+                    $key,
+                    (true === $isPro && false === $this->pro) ? false : PrestaShopTools::getValue($key)
+                );
+            }
+
+            $output .= $this->displayConfirmation('Settings updated.');
+        }
+
+        /*
+         * general settings form
+         */
         $helper = new \HelperForm();
 
         $helper->show_toolbar = false;
@@ -107,10 +127,16 @@ trait ModuleTrait
         $vars = [];
         $input = [];
 
-        foreach ($this->configurationVO::getFields() as $key => $value) {
+        foreach (ConfigurationVO::getFields() as $key => $value) {
             $vars[$key] = PrestaShopConfiguration::get($key);
-
             $value['name'] = $key;
+
+            if (ConfigurationVO::TRACK_USER_ID === $key && false === $this->pro) {
+                $value['disabled'] = true;
+                $value['desc'] = $value['desc'] . ' <a href="https://tagconcierge.com/tag-concierge-for-prestashop" target="_blank">Upgrade to PRO</a>';
+                $vars[$key] = false;
+            }
+
             $input[] = $value;
         }
 
@@ -120,18 +146,100 @@ trait ModuleTrait
             'id_language' => $this->context->language->id,
         ];
 
-        return $output . $helper->generateForm([[
-                'form' => [
-                    'legend' => [
-                        'title' => 'General settings',
-                        'icon' => 'icon-cogs',
+        $generalSettingsForm = $helper->generateForm([[
+            'form' => [
+                'legend' => [
+                    'title' => 'General settings',
+                    'icon' => 'icon-cogs',
+                ],
+                'input' => $input,
+                'submit' => [
+                    'title' => 'Save',
+                ],
+            ],
+        ]]);
+        /*
+         * /general settings form
+         */
+
+        /*
+         * events settings form
+         */
+        $helper = new \HelperForm();
+
+        $helper->show_toolbar = false;
+        $helper->table = $this->table;
+        $helper->module = $this;
+        $helper->default_form_language = $this->context->language->id;
+        $helper->allow_employee_form_lang = PrestaShopConfiguration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
+
+        $helper->identifier = $this->identifier;
+        $helper->submit_action = 'submit_tc_events';
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
+            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->token = PrestaShopTools::getAdminTokenLite('AdminModules');
+
+        $vars = [];
+        $input = [];
+
+        foreach (ConfigurationVO::getEvents() as $event => $isPro) {
+            $disabled = false;
+            $description = '';
+            $key = sprintf('TC_EVENT_STATE_BROWSER_%s', strtoupper($event));
+
+            $vars[$key] = true === PrestaShopConfiguration::hasKey($key) ? PrestaShopConfiguration::get($key) : true;
+
+            if (true === $isPro && false === $this->pro) {
+                $vars[$key] = false;
+                $disabled = true;
+                $description = '<a href="https://tagconcierge.com/tag-concierge-for-prestashop" target="_blank">Upgrade to PRO</a>';
+            }
+
+            $input[] = [
+                'name' => $key,
+                'desc' => $description,
+                'type' => 'switch',
+                'label' => $event,
+                'disabled' => $disabled,
+                'is_bool' => true,
+                'values' => [
+                    [
+                        'id' => 'active',
+                        'value' => true,
+                        'label' => 'Enabled',
                     ],
-                    'input' => $input,
-                    'submit' => [
-                        'title' => 'Save',
+                    [
+                        'id' => 'inactive',
+                        'value' => false,
+                        'label' => 'Disabled',
                     ],
                 ],
-            ]]) . $this->context->smarty->fetch($this->local_path . 'views/templates/admin/configure.tpl');
+            ];
+        }
+
+        $helper->tpl_vars = [
+            'fields_value' => $vars,
+            'languages' => $this->context->controller->getLanguages(),
+            'id_language' => $this->context->language->id,
+        ];
+
+        $eventsSettingsForm = $helper->generateForm([[
+            'form' => [
+                'legend' => [
+                    'title' => 'Events settings',
+                    'icon' => 'icon-bell',
+                ],
+                'input' => $input,
+                'submit' => [
+                    'title' => 'Save',
+                ],
+            ],
+        ]]);
+        /*
+         * /events settings form
+         */
+
+        return $output . $generalSettingsForm . $eventsSettingsForm . $this->context->smarty->fetch($this->local_path . 'views/templates/admin/configure.tpl');
     }
 
     public function getHooks(): array
@@ -141,7 +249,7 @@ trait ModuleTrait
 
     private function isModuleActive(): bool
     {
-        return '1' === PrestaShopConfiguration::get($this->configurationVO::STATE);
+        return '1' === PrestaShopConfiguration::get(ConfigurationVO::STATE);
     }
 
     private function setupHooks(): void
@@ -155,7 +263,7 @@ trait ModuleTrait
 
     public static function isDebug(): bool
     {
-        return '1' === \Configuration::get($this->configurationVO::DEBUG);
+        return '1' === PrestaShopConfiguration::get(ConfigurationVO::DEBUG);
     }
 
     public function __call(string $name, array $arguments)
@@ -183,6 +291,10 @@ trait ModuleTrait
 
             foreach ($this->hooks[$hookName] as $hookClass => $callbacks) {
                 $hook = $this->hookProvider->provide($hookClass);
+
+                if ((true === $hook instanceof AbstractEcommerceEventHook) && false === $hook->isEnabled()) {
+                    continue;
+                }
 
                 foreach ($callbacks as $callback) {
                     $result .= $hook->{$callback}($arguments[0]);

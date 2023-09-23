@@ -1,15 +1,12 @@
 <?php
 
-use Configuration as PrestaShopConfiguration;
 use PrestaShop\Module\TagConciergeFree\Hook;
-use PrestaShop\Module\TagConciergeFree\Hook\HookProvider;
-use PrestaShop\Module\TagConciergeFree\Install\InstallerFactory;
+use PrestaShop\Module\TagConciergeFree\Install\ModuleTrait;
 use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-
 
 if ('vendor' !== basename(realpath(dirname(__FILE__).'/../../'))) {
     require_once _PS_MODULE_DIR_ . 'tagconciergefree/vendor/autoload.php';
@@ -18,6 +15,7 @@ if ('vendor' !== basename(realpath(dirname(__FILE__).'/../../'))) {
 class TagConciergeFree extends Module
 {
     use ModuleTrait;
+
     /** @var array */
     const HOOKS = [
         Hook\FrontendAssetsHook::class,
