@@ -1,7 +1,5 @@
 <?php
 
-namespace PrestaShop\Module\TagConciergeFree;
-
 use Configuration as PrestaShopConfiguration;
 use PrestaShop\Module\TagConciergeFree\Hook;
 use PrestaShop\Module\TagConciergeFree\Hook\HookProvider;
