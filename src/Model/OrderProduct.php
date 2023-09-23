@@ -2,6 +2,8 @@
 
 namespace PrestaShop\Module\TagConciergeFree\Model;
 
+use ArrayAccess;
+
 class OrderProduct extends Product
 {
     /** @var int */
@@ -22,9 +24,6 @@ class OrderProduct extends Product
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function toArray(): array
     {
         $array = parent::toArray();
@@ -34,7 +33,7 @@ class OrderProduct extends Product
     }
 
     /**
-     * @param \ArrayAccess|array $array
+     * @param ArrayAccess|array $array
      *
      * @return OrderProduct
      */

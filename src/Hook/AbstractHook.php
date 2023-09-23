@@ -1,19 +1,17 @@
 <?php
 
-
 namespace PrestaShop\Module\TagConciergeFree\Hook;
+
+use Context;
+use Module;
 
 abstract class AbstractHook
 {
-    /** @var array */
     public const HOOKS = [];
 
-    /**
-     * @var \TagConciergeFree
-     */
     protected $module;
 
-    public function __construct(\TagConciergeFree $module)
+    public function __construct(Module $module)
     {
         $this->module = $module;
     }
@@ -23,8 +21,8 @@ abstract class AbstractHook
         return static::HOOKS;
     }
 
-    protected function getContext(): \Context
+    protected function getContext(): Context
     {
-        return \Context::getContext();
+        return Context::getContext();
     }
 }

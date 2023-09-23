@@ -2,6 +2,8 @@
 
 namespace PrestaShop\Module\TagConciergeFree\Hook;
 
+use Module;
+
 class HookProvider
 {
     /**
@@ -14,7 +16,7 @@ class HookProvider
      */
     private $module;
 
-    public function __construct(\TagConciergeFree $module)
+    public function __construct(Module $module)
     {
         $this->module = $module;
     }
