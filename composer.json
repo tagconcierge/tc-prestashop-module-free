@@ -5,7 +5,10 @@
   "autoload": {
     "psr-4": {
       "PrestaShop\\Module\\TagConciergeFree\\": "src/"
-    }
+    },
+    "classmap": [
+      "./tagconciergefree.php"
+    ]
   },
   "config": {
     "prepend-autoloader": false,
