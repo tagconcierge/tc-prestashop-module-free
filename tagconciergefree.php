@@ -30,14 +30,6 @@ class TagConciergeFree extends Module
     /** @var string */
     const MODULE_FILE = _PS_MODULE_DIR_ . 'tagconciergefree/tagconciergefree.php';
 
-    /** @var array */
-    private $hooks;
-
-    /**
-     * @var HookProvider
-     */
-    private $hookProvider;
-
     private $configurationVO = ConfigurationVO::class;
 
     private $pro = false;

@@ -11,8 +11,17 @@ use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 
 trait ModuleTrait
 {
+    /** @var array */
+    private $hooks;
+
+    /**
+     * @var HookProvider
+     */
+    private $hookProvider;
+
     private function init()
     {
+
         @define('TC_VERSION', $this->version);
 
         $this->hookProvider = new HookProvider($this);
