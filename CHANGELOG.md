@@ -1,6 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.0.4] - 2023-09-24
+
+### Added
+- configuration of enabled ecommerce events
+
+### Changed
+- reduced frontend dependencies
+
+### Fixed
+- compatibility with PrestaShop 1.7.6
+
 ## [1.0.3] - 2023-06-23
 
 ### Added
