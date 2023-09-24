@@ -2,7 +2,7 @@
 
 use PrestaShop\Module\TagConciergeFree\Hook;
 use PrestaShop\Module\TagConciergeFree\Install\ModuleTrait;
-use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
+use PrestaShop\Module\TagConciergeFree\Install\TagConciergeModuleInterface;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -12,7 +12,7 @@ if ('vendor' !== basename(realpath(dirname(__FILE__).'/../../'))) {
     require_once _PS_MODULE_DIR_ . 'tagconciergefree/vendor/autoload.php';
 }
 
-class TagConciergeFree extends Module
+class TagConciergeFree extends Module implements TagConciergeModuleInterface
 {
     use ModuleTrait;
 

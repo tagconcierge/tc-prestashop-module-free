@@ -8,7 +8,7 @@ use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 
 class Installer
 {
-    public function install(Module $module): bool
+    public function install(TagConciergeModuleInterface $module): bool
     {
         foreach (ConfigurationVO::getFields() as $key => $value) {
             if (ConfigurationVO::INSTANCE_UUID === $key) {
@@ -25,7 +25,7 @@ class Installer
         return $this->registerHooks($module);
     }
 
-    public function uninstall(Module $module): bool
+    public function uninstall(TagConciergeModuleInterface $module): bool
     {
         foreach (array_keys(ConfigurationVO::getFields()) as $key) {
             if (ConfigurationVO::INSTANCE_UUID === $key) {
@@ -37,7 +37,7 @@ class Installer
         return true;
     }
 
-    private function registerHooks(Module $module): bool
+    private function registerHooks(TagConciergeModuleInterface $module): bool
     {
         foreach ($module->getHooks() as $hook) {
             if (false === $module->registerHook($hook)) {

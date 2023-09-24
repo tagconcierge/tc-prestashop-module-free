@@ -2,7 +2,7 @@
 
 namespace PrestaShop\Module\TagConciergeFree\Hook;
 
-use Module;
+use PrestaShop\Module\TagConciergeFree\Install\TagConciergeModuleInterface;
 
 class HookProvider
 {
@@ -12,11 +12,11 @@ class HookProvider
     private $hooks;
 
     /**
-     * @var \TagConciergeFree
+     * @var TagConciergeModuleInterface
      */
     private $module;
 
-    public function __construct(Module $module)
+    public function __construct(TagConciergeModuleInterface $module)
     {
         $this->module = $module;
     }

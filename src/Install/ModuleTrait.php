@@ -7,6 +7,7 @@ use PrestaShop\Module\TagConciergeFree\Hook\Event\AbstractEcommerceEventHook;
 use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 use PrestaShopLogger;
 use RuntimeException;
+use SmartyException;
 use Tools as PrestaShopTools;
 use PrestaShop\Module\TagConciergeFree\Hook\HookProvider;
 
@@ -20,7 +21,7 @@ trait ModuleTrait
      */
     private $hookProvider;
 
-    private function init()
+    private function init(): void
     {
         @define('TC_VERSION', $this->version);
 
@@ -28,7 +29,7 @@ trait ModuleTrait
         $this->setupHooks();
     }
 
-    public function install()
+    public function install(): bool
     {
         if (false === parent::install()) {
             return false;
@@ -39,7 +40,7 @@ trait ModuleTrait
         return $installer->install($this);
     }
 
-    public function uninstall()
+    public function uninstall(): bool
     {
         if (false === parent::uninstall()) {
             return false;
@@ -51,8 +52,7 @@ trait ModuleTrait
     }
 
     /**
-     * @throws \PrestaShopException
-     * @throws \SmartyException
+     * @throws SmartyException
      */
     public function getContent(): string
     {
@@ -133,7 +133,7 @@ trait ModuleTrait
 
             if (ConfigurationVO::TRACK_USER_ID === $key && false === $this->pro) {
                 $value['disabled'] = true;
-                $value['desc'] = $value['desc'] . ' <a href="https://tagconcierge.com/tag-concierge-for-prestashop" target="_blank">Upgrade to PRO</a>';
+                $value['desc'] .= ' <a href="https://tagconcierge.com/tag-concierge-for-prestashop" target="_blank">Upgrade to PRO</a>';
                 $vars[$key] = false;
             }
 
@@ -261,9 +261,17 @@ trait ModuleTrait
         }
     }
 
-    public static function isDebug(): bool
+    public function isDebug(): bool
     {
         return '1' === PrestaShopConfiguration::get(ConfigurationVO::DEBUG);
+    }
+
+    public function render(string $templatePath): string
+    {
+        return $this->display(
+            static::MODULE_FILE,
+            sprintf('views/templates/%s', $templatePath)
+        );
     }
 
     public function __call(string $name, array $arguments)

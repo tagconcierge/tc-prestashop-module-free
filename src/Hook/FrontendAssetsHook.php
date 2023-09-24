@@ -2,6 +2,8 @@
 
 namespace PrestaShop\Module\TagConciergeFree\Hook;
 
+use Configuration;
+use Context;
 use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 
 class FrontendAssetsHook extends AbstractHook
@@ -19,9 +21,9 @@ class FrontendAssetsHook extends AbstractHook
 
     public function loadAssets(): string
     {
-        $context = \Context::getContext();
+        $context = Context::getContext();
 
-        $assetsVersion = (_PS_MODE_DEV_ || \TagConciergeFree::isDebug()) ? time() : TC_VERSION;
+        $assetsVersion = (_PS_MODE_DEV_ || $this->module->isDebug()) ? time() : TC_VERSION;
 
         $context->smarty->assign(
             'tc_app_js_path',
@@ -31,22 +33,19 @@ class FrontendAssetsHook extends AbstractHook
                 $this->module->name
             )
         );
-        $context->smarty->assign('tc_debug', \TagConciergeFree::isDebug() ? 'true' : 'false');
+        $context->smarty->assign('tc_debug', $this->module->isDebug() ? 'true' : 'false');
         $context->smarty->assign('tc_assets_version', $assetsVersion);
 
-        return $this->module->display(
-            \TagConciergeFree::MODULE_FILE,
-            'views/templates/hooks/frontend_assets/display_header.tpl'
-        );
+        return $this->module->render('hooks/frontend_assets/display_header.tpl');
     }
 
     public function loadGtmScript(): string
     {
-        return \Configuration::get(ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD);
+        return Configuration::get(ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD);
     }
 
     public function loadGtmFrame(): string
     {
-        return \Configuration::get(ConfigurationVO::GTM_CONTAINER_SNIPPET_BODY);
+        return Configuration::get(ConfigurationVO::GTM_CONTAINER_SNIPPET_BODY);
     }
 }
