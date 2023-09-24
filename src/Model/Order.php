@@ -3,6 +3,9 @@
 namespace PrestaShop\Module\TagConciergeFree\Model;
 
 use Cart as PrestaShopCart;
+use Configuration;
+use Context;
+use Exception;
 use Order as PrestaShopOrder;
 
 class Order
@@ -179,12 +182,12 @@ class Order
     /**
      * @return static
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function fromOrderObject(PrestaShopOrder $orderObject): self
     {
         $order = new self();
-        $context = \Context::getContext();
+        $context = Context::getContext();
 
         $cartObject = new PrestaShopCart(
             PrestaShopOrder::getCartIdStatic($orderObject->id, $context->customer->id)
@@ -197,10 +200,12 @@ class Order
 
         $orderState = new \OrderState($orderObject->current_state);
 
+        $orderStatus = true === isset($orderState->name[1]) ? $orderState->name[1] : 'n/a';
+
         $order
             ->setId($orderObject->id)
-            ->setStatus($orderState->name[1])
-            ->setAffiliation(\Configuration::get('PS_SHOP_NAME'))
+            ->setStatus($orderStatus)
+            ->setAffiliation(Configuration::get('PS_SHOP_NAME'))
             ->setPaymentMethod($orderObject->payment)
             ->setCurrency($context->currency->iso_code)
             ->setValue((float) $cartObject->getOrderTotal(true))

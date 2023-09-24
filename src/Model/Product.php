@@ -2,6 +2,12 @@
 
 namespace PrestaShop\Module\TagConciergeFree\Model;
 
+use ArrayAccess;
+use Category;
+use Context;
+use Manufacturer;
+use Tools;
+
 class Product
 {
     /** @var int */
@@ -170,13 +176,13 @@ class Product
     }
 
     /**
-     * @param \ArrayAccess|array $array
+     * @param ArrayAccess|array $array
      */
     public static function fromArray($array): self
     {
-        $context = \Context::getContext();
-        $category = new \Category($array['id_category_default'], $context->language->id);
-        $manufacturer = new \Manufacturer($array['id_manufacturer']);
+        $context = Context::getContext();
+        $category = new Category($array['id_category_default'], $context->language->id);
+        $manufacturer = new Manufacturer($array['id_manufacturer']);
 
         if (false === isset($array['attributes'])) {
             $array['attributes'] = '';
@@ -184,21 +190,23 @@ class Product
 
         if (true === \is_array($array['attributes'])) {
             $attributes = array_map(static function ($attribute) {
-                return \Tools::strtolower(trim(
+                return Tools::strtolower(trim(
                     sprintf('%s_%s', $attribute['group'], $attribute['name'])
                 ));
             }, $array['attributes']);
 
             $variant = implode('___', $attributes);
         } else {
-            $variant = \Tools::strtolower(trim(
+            $variant = Tools::strtolower(trim(
                 str_replace([' : ', '- '], ['_', '___'], $array['attributes'])
             ));
         }
 
-        return (new static())
+        $calledClass = get_called_class();
+
+        return (new $calledClass())
             ->setId($array['id_product'])
-            ->setName(\Tools::replaceAccentedChars($array['name']))
+            ->setName(Tools::replaceAccentedChars($array['name']))
             ->setPrice((float) ($array['price_amount'] ?? $array['price']))
             ->setBrand($manufacturer->name ?? '')
             ->setCategory($category->name ?? '')

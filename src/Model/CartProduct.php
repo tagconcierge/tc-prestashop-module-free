@@ -2,6 +2,8 @@
 
 namespace PrestaShop\Module\TagConciergeFree\Model;
 
+use ArrayAccess;
+
 class CartProduct extends Product
 {
     /** @var int */
@@ -34,7 +36,7 @@ class CartProduct extends Product
     }
 
     /**
-     * @param \ArrayAccess|array $array
+     * @param ArrayAccess|array $array
      *
      * @return CartProduct
      */
@@ -46,6 +48,6 @@ class CartProduct extends Product
         return $cartProduct
             ->setStockQuantity($array['stock_quantity'])
             ->setCartQuantity($array['cart_quantity'])
-        ;
+            ;
     }
 }

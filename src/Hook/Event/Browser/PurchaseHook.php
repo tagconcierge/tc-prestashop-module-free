@@ -3,13 +3,17 @@
 namespace PrestaShop\Module\TagConciergeFree\Hook\Event\Browser;
 
 use Order as PrestaShopOrder;
-use PrestaShop\Module\TagConciergeFree\Hook\AbstractHook;
+use PrestaShop\Module\TagConciergeFree\Hook\Event\AbstractEcommerceEventHook;
 use PrestaShop\Module\TagConciergeFree\Hook\Hooks;
 use PrestaShop\Module\TagConciergeFree\Model\Order;
-use TagConciergeFree;
+use PrestaShop\Module\TagConciergeFree\ValueObject\EcommerceEventVO;
 
-class PurchaseHook extends AbstractHook
+class PurchaseHook extends AbstractEcommerceEventHook
 {
+    protected $eventName = EcommerceEventVO::PURCHASE;
+
+    protected $eventType = EcommerceEventVO::BROWSER_SIDE;
+
     /** @var array */
     public const HOOKS = [
         Hooks::DISPLAY_ORDER_CONFIRMATION => [
@@ -71,10 +75,7 @@ class PurchaseHook extends AbstractHook
 
         $this->getContext()->cookie->tc_tracked_purchase_id = $order->id;
 
-        return $this->module->display(
-            TagConciergeFree::MODULE_FILE,
-            'views/templates/hooks/purchase/display_order_confirmation.tpl'
-        );
+        return $this->module->render('hooks/purchase/display_order_confirmation.tpl');
     }
 
     private function isP24ConfirmationPage(): bool

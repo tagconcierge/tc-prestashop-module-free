@@ -8,17 +8,17 @@
         </div>
 
         <div id="gtm-ecommerce-woo-presets-grid">
-            <div id="gtm-ecommerce-woo-preset-tmpl" style="display: none;">
+            <div id="gtm-ecommerce-woo-preset-tmpl" class="preset" style="display: none;">
 
                 <div class="col-md-4 m-2">
                     <div class="panel">
-                        <p class="card-title name">Google Analytics 4</p>
+                        <p class="card-title name">Google Analytics 4</p><span class="recently-added" style="float:right; display: none;">recently added</span>
                         <div class="card-body">
                             <p class="description">Description</p>
                             <p>
                                 <b>Supported eCommerce events:</b> <span class="events-count">2</span>
                             </p>
-                            <p><a class="download btn btn-primary" href="#">Download</a></p><p>Version: <span class="version">N/A</span></p>
+                            <p><a class="download btn btn-primary" href="#">Download</a></p><p>Version: <span class="version">N/A</span> <div class="upgrade" style="text-align: center; display: none;"><a class="button button-primary" href="https://tagconcierge.com/tag-concierge-for-prestashop" target="_blank">Upgrade to PRO</a></div></p>
                         </div>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
 
         <br />
         <div id="gtm-ecommerce-woo-presets-upgrade" style="text-align: center; display: none;">
-            <a class="button button-primary" href="https://go.tagconcierge.com/MSm8e" target="_blank">Upgrade to PRO</a>
+{*            <a class="button button-primary" href="https://tagconcierge.com/tag-concierge-for-prestashop" target="_blank">Upgrade to PRO</a>*}
         </div>
     </div>
     <div class="panel-footer" style="clear: both"></div>
@@ -47,7 +47,7 @@
 
     function getPresets() {
         return $.ajax({
-            url: 'https://api.tagconcierge.com/v2/presets',
+            url: '{$tc_presets_url}',
         }).then(function(res) {
             return res;
         });
@@ -65,12 +65,18 @@
                     var $preset = $(presetTemplateHtml);
                     $(".name", $preset).text(preset.name);
                     $(".description", $preset).text(preset.description);
+
                     if (preset.locked !== true) {
                         $(".download", $preset).attr("data-id", preset.id);
                     } else {
                         locked = true;
                         $(".download", $preset).attr("disabled", "disabled");
                         $(".download", $preset).attr("title", "Requires PRO version, upgrade below.");
+                        $(".upgrade", $preset).show();
+                    }
+
+                    if (true === preset.latest) {
+                      $($preset).toggleClass('latest');
                     }
                     $(".events-count", $preset).text((preset.events || []).length);
 
@@ -108,4 +114,17 @@
     });
 })(jQuery);
 </script>
-</div>
+<style>
+    #gtm-ecommerce-woo-presets-grid .latest .panel {
+        border-color: rgb(6, 147, 45) !important;
+        border-width: 3px !important;
+    }
+    #gtm-ecommerce-woo-presets-grid .latest .panel .recently-added {
+        display: block !important;
+        color: rgb(6, 147, 45);
+        font-weight: bold;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+</style>

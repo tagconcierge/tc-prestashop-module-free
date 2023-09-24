@@ -4,7 +4,6 @@ namespace PrestaShop\Module\TagConciergeFree\Hook;
 
 class DebugHook extends AbstractHook
 {
-    /** @var array */
     public const HOOKS = [
         Hooks::DISPLAY_AFTER_BODY_OPENING_TAG => [
             'addDebugConsole',
@@ -16,11 +15,8 @@ class DebugHook extends AbstractHook
 
     public function addDebugConsole(): string
     {
-        if (true === \TagConciergeFree::isDebug()) {
-            return $this->module->display(
-                \TagConciergeFree::MODULE_FILE,
-                'views/templates/hooks/debug_hook/display_after_body_opening_tag.tpl'
-            );
+        if (true === $this->module->isDebug()) {
+            return $this->module->render('hooks/debug_hook/display_after_body_opening_tag.tpl');
         }
 
         return '';
@@ -28,11 +24,8 @@ class DebugHook extends AbstractHook
 
     public function addDebugConsolePlaceholder(): string
     {
-        if (true === \TagConciergeFree::isDebug()) {
-            return $this->module->display(
-                \TagConciergeFree::MODULE_FILE,
-                'views/templates/hooks/debug_hook/display_before_body_closing_tag.tpl'
-            );
+        if (true === $this->module->isDebug()) {
+            return $this->module->render('hooks/debug_hook/display_before_body_closing_tag.tpl');
         }
 
         return '';
