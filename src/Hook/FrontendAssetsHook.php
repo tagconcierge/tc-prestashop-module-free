@@ -3,8 +3,6 @@
 namespace PrestaShop\Module\TagConciergeFree\Hook;
 
 use Configuration;
-use Context;
-use PrestaShop\Module\TagConciergeFree\Hook\Hooks;
 use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 
 class FrontendAssetsHook extends AbstractHook

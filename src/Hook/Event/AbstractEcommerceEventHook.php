@@ -15,6 +15,6 @@ abstract class AbstractEcommerceEventHook extends AbstractHook
     {
         $configurationKey = sprintf('TC_EVENT_STATE_%s_%s', strtoupper($this->eventType), strtoupper($this->eventName));
 
-        return '1' === Configuration::get($configurationKey);
+        return false === Configuration::hasKey($configurationKey) || '1' === Configuration::get($configurationKey);
     }
 }
