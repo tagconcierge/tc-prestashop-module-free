@@ -47,7 +47,7 @@
 
     function getPresets() {
         return $.ajax({
-            url: 'https://api.tagconcierge.com/v2/presets',
+            url: '{$tc_presets_url}',
         }).then(function(res) {
             return res;
         });
@@ -65,6 +65,7 @@
                     var $preset = $(presetTemplateHtml);
                     $(".name", $preset).text(preset.name);
                     $(".description", $preset).text(preset.description);
+
                     if (preset.locked !== true) {
                         $(".download", $preset).attr("data-id", preset.id);
                     } else {
@@ -127,4 +128,3 @@
         right: 20px;
     }
 </style>
-</div>

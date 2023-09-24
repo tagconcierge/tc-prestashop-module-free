@@ -1,8 +1,7 @@
 {literal}
-<script type="text/javascript">
+<script type="text/javascript" data-tag-concierge-scripts>
   (function(dataLayer, tagConcierge) {
     const order = JSON.parse(atob('{/literal}{base64_encode($tc_order|json_encode)}{literal}'));
-
     let event = {
       ...tagConcierge.eventBase(),
       event: 'purchase',

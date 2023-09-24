@@ -6,12 +6,13 @@ use Order as PrestaShopOrder;
 use PrestaShop\Module\TagConciergeFree\Hook\Event\AbstractEcommerceEventHook;
 use PrestaShop\Module\TagConciergeFree\Hook\Hooks;
 use PrestaShop\Module\TagConciergeFree\Model\Order;
+use PrestaShop\Module\TagConciergeFree\ValueObject\EcommerceEventVO;
 
 class PurchaseHook extends AbstractEcommerceEventHook
 {
-    protected $eventName = 'purchase';
+    protected $eventName = EcommerceEventVO::PURCHASE;
 
-    protected $eventType = 'browser';
+    protected $eventType = EcommerceEventVO::BROWSER_SIDE;
 
     /** @var array */
     public const HOOKS = [

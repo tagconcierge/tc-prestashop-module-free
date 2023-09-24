@@ -30,6 +30,8 @@ class TagConciergeFree extends Module implements TagConciergeModuleInterface
 
     private $pro = false;
 
+    private $presetsUrl = 'https://api.tagconcierge.com/v2/presets';
+
     /**
      * TagConcierge constructor.
      */

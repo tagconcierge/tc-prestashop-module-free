@@ -59,6 +59,7 @@ trait ModuleTrait
         $this->context->smarty->assign('module_dir', $this->_path);
         $this->context->smarty->assign('instance_uuid', PrestaShopConfiguration::get(ConfigurationVO::INSTANCE_UUID));
         $this->context->smarty->assign('plugin_version', $this->version);
+        $this->context->smarty->assign('tc_presets_url', $this->presetsUrl);
 
         $output = '';
 
@@ -239,7 +240,7 @@ trait ModuleTrait
          * /events settings form
          */
 
-        return $output . $generalSettingsForm . $eventsSettingsForm . $this->context->smarty->fetch($this->local_path . 'views/templates/admin/configure.tpl');
+        return $output . $generalSettingsForm . $eventsSettingsForm . $this->render('admin/configure.tpl');
     }
 
     public function getHooks(): array
@@ -268,9 +269,16 @@ trait ModuleTrait
 
     public function render(string $templatePath): string
     {
+        $path = sprintf('views/templates/%s', $templatePath);
+        $templateExists = file_exists(sprintf('%s/views/templates/%s', dirname(static::MODULE_FILE), $templatePath));
+
+        if (false === $templateExists) {
+            $path = sprintf('vendor/tagconcierge/tc-prestashop-module-free/views/templates/%s', $templatePath);
+        }
+
         return $this->display(
             static::MODULE_FILE,
-            sprintf('views/templates/%s', $templatePath)
+            $path
         );
     }
 

@@ -102,14 +102,14 @@ class ConfigurationVO
     public static function getEvents(): array
     {
         return [
-            'view_item_list' => true,
-            'select_item' => true,
-            'view_item' => true,
-            'add_to_cart' => false,
-            'remove_from_cart' => true,
-            'view_cart' => true,
-            'begin_checkout' => true,
-            'purchase' => false,
+            EcommerceEventVO::VIEW_ITEM_LIST => true,
+            EcommerceEventVO::SELECT_ITEM => true,
+            EcommerceEventVO::VIEW_ITEM => true,
+            EcommerceEventVO::ADD_TO_CART => false,
+            EcommerceEventVO::REMOVE_FROM_CART => true,
+            EcommerceEventVO::VIEW_CART => true,
+            EcommerceEventVO::BEGIN_CHECKOUT => true,
+            EcommerceEventVO::PURCHASE => false,
         ];
     }
 }

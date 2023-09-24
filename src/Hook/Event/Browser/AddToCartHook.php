@@ -4,12 +4,13 @@ namespace PrestaShop\Module\TagConciergeFree\Hook\Event\Browser;
 
 use PrestaShop\Module\TagConciergeFree\Hook\Event\AbstractEcommerceEventHook;
 use PrestaShop\Module\TagConciergeFree\Hook\Hooks;
+use PrestaShop\Module\TagConciergeFree\ValueObject\EcommerceEventVO;
 
 class AddToCartHook extends AbstractEcommerceEventHook
 {
-    protected $eventName = 'add_to_cart';
+    protected $eventName = EcommerceEventVO::ADD_TO_CART;
 
-    protected $eventType = 'browser';
+    protected $eventType = EcommerceEventVO::BROWSER_SIDE;
 
     /** @var array */
     public const HOOKS = [
