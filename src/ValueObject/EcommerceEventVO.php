@@ -22,6 +22,8 @@ class EcommerceEventVO
 
     public const BEGIN_CHECKOUT = 'begin_checkout';
 
+    public const ADD_SHIPPING_INFO = 'add_shipping_info';
+
     public const PURCHASE = 'purchase';
 
     public const USER_ID = 'user_id';
