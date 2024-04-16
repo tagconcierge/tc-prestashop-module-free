@@ -1,37 +1,9 @@
 {literal}
-<script type="text/javascript">
-  (function(dataLayer, prestashop, tagConcierge, jQuery) {
-    tagConcierge.prestashopCart = { ...prestashop.cart };
-
-    prestashop.on('updateCart', (data) => {
-      if (undefined === data.resp || undefined === data.resp.cart) {
-        //bug will be fixed in Prestashop 1.7.8.0
-        if (null === tagConcierge.lastPrestashopCartFromResponse) {
-          jQuery.ajax({
-            type: 'POST',
-            url: '/index.php?fc=module&module=tagconciergefree&controller=ajax&ajax=true',
-            data: 'action=getCart',
-            async: false,
-            success: function (d) {
-              data = {
-                resp: {
-                  cart: d
-                }
-              };
-            }
-          });
-        } else {
-          data = {
-            resp: {
-              cart: tagConcierge.lastPrestashopCartFromResponse
-            }
-          }
-        }
-      }
-
+<script type="text/javascript" data-tag-concierge-scripts>
+  (function(dataLayer, tagConcierge) {
+    tagConcierge.on('cartUpdated', (cart) => {
       const mapProduct = (product) => {
         let attributes = [];
-
         for (let attribute in product.attributes) {
           attributes.push(`${attribute.trim().toLowerCase()}_${product.attributes[attribute].trim().toLowerCase()}`)
         }
@@ -53,11 +25,9 @@
 
       for (let localCartProduct of tagConcierge.prestashopCart.products) {
         let productExists = false;
-
-        for (let cartProduct of data.resp.cart.products) {
+        for (let cartProduct of cart.products) {
           let sameProduct = cartProduct.id === localCartProduct.id
             && cartProduct.attributes_small === localCartProduct.attributes_small;
-
           if (false === sameProduct) {
             continue;
           }
@@ -83,13 +53,11 @@
         }
       }
 
-      for (let cartProduct of data.resp.cart.products) {
+      for (let cartProduct of cart.products) {
         let productExists = false;
-
         for (let localCartProduct of tagConcierge.prestashopCart.products) {
           let sameProduct = cartProduct.id === localCartProduct.id
             && cartProduct.attributes_small === localCartProduct.attributes_small;
-
           if (false === sameProduct) {
             continue;
           }
@@ -106,7 +74,9 @@
         }
       }
 
-      tagConcierge.prestashopCart = {...data.resp.cart};
+      if (0 === products.length) {
+        return;
+      }
 
       for (let product of products) {
         let event = {
@@ -120,6 +90,6 @@
         dataLayer.push(event);
       }
     });
-  })(dataLayer, prestashop, tagConcierge, jQuery);
+  })(dataLayer, tagConcierge);
 </script>
 {/literal}

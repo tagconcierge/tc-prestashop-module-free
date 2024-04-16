@@ -3,6 +3,7 @@
 namespace PrestaShop\Module\TagConciergeFree\Model;
 
 use Cart as PrestaShopCart;
+use Exception;
 
 class Cart
 {
@@ -61,6 +62,8 @@ class Cart
     public function setProducts(array $products): self
     {
         $this->products = $products;
+
+        return $this;
     }
 
     /**
@@ -83,7 +86,7 @@ class Cart
      *
      * @return Cart
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function fromCartObject(PrestaShopCart $cartObject): self
     {

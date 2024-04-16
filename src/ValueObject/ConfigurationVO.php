@@ -8,6 +8,9 @@ class ConfigurationVO
     public const STATE = 'TC_STATE';
 
     /** @var string */
+    public const TRACK_USER_ID = 'TC_TRACK_USER_ID';
+
+    /** @var string */
     public const GTM_CONTAINER_SNIPPET_HEAD = 'TC_GTM_CONTAINER_SNIPPET_HEAD';
 
     /** @var string */
@@ -28,6 +31,24 @@ class ConfigurationVO
             'label' => 'State',
             'is_bool' => true,
             'desc' => 'General state of the module.',
+            'values' => [
+                [
+                    'id' => 'active',
+                    'value' => true,
+                    'label' => 'Enabled',
+                ],
+                [
+                    'id' => 'inactive',
+                    'value' => false,
+                    'label' => 'Disabled',
+                ],
+            ],
+        ],
+        self::TRACK_USER_ID => [
+            'type' => 'switch',
+            'label' => 'Client ID tracking',
+            'is_bool' => true,
+            'desc' => 'ID of logged-in client will be passed to Google Analytics.',
             'values' => [
                 [
                     'id' => 'active',
@@ -75,6 +96,20 @@ class ConfigurationVO
 
     public static function getFields(): array
     {
-        return self::$fields;
+        return static::$fields;
+    }
+
+    public static function getEvents(): array
+    {
+        return [
+            EcommerceEventVO::VIEW_ITEM_LIST => true,
+            EcommerceEventVO::SELECT_ITEM => true,
+            EcommerceEventVO::VIEW_ITEM => true,
+            EcommerceEventVO::ADD_TO_CART => false,
+            EcommerceEventVO::REMOVE_FROM_CART => true,
+            EcommerceEventVO::VIEW_CART => true,
+            EcommerceEventVO::BEGIN_CHECKOUT => true,
+            EcommerceEventVO::PURCHASE => false,
+        ];
     }
 }

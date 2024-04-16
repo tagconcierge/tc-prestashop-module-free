@@ -2,11 +2,16 @@
 
 namespace PrestaShop\Module\TagConciergeFree\Hook\Event\Browser;
 
-use PrestaShop\Module\TagConciergeFree\Hook\AbstractHook;
+use PrestaShop\Module\TagConciergeFree\Hook\Event\AbstractEcommerceEventHook;
 use PrestaShop\Module\TagConciergeFree\Hook\Hooks;
+use PrestaShop\Module\TagConciergeFree\ValueObject\EcommerceEventVO;
 
-class AddToCartHook extends AbstractHook
+class AddToCartHook extends AbstractEcommerceEventHook
 {
+    protected $eventName = EcommerceEventVO::ADD_TO_CART;
+
+    protected $eventType = EcommerceEventVO::BROWSER_SIDE;
+
     /** @var array */
     public const HOOKS = [
         Hooks::DISPLAY_BEFORE_BODY_CLOSING_TAG => [
@@ -16,9 +21,6 @@ class AddToCartHook extends AbstractHook
 
     public function loadScript(): string
     {
-        return $this->module->display(
-            \TagConciergeFree::MODULE_FILE,
-            'views/templates/hooks/add_to_cart/display_before_body_closing_tag.tpl'
-        );
+        return $this->module->render('hooks/add_to_cart/display_before_body_closing_tag.tpl');
     }
 }
