@@ -15,4 +15,7 @@ class Hooks
 
     /** @var string */
     public const DISPLAY_BEFORE_BODY_CLOSING_TAG = 'displayBeforeBodyClosingTag';
+
+    /** @var string */
+    public const TC_DISPLAY_BEFORE_GTM_HEAD_SNIPPET = 'tcDisplayBeforeGtmHeadSnippet';
 }

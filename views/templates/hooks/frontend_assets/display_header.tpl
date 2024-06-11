@@ -57,7 +57,7 @@
   if ('undefined' === typeof window.tagConcierge.prestashopCart.products) {
       window.tagConcierge.prestashopCart.products = [];
   }
-  
+
   /*
    * empty cart bug, fixed in PrestaShop 1.7.8.0
    */
