@@ -29,4 +29,6 @@ class EcommerceEventVO
     public const PURCHASE = 'purchase';
 
     public const USER_ID = 'user_id';
+
+    public const USER_DATA = 'user_data';
 }
