@@ -3,7 +3,9 @@
 namespace PrestaShop\Module\TagConciergeFree\Hook;
 
 use Configuration;
+use Hook as PrestaShopHook;
 use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
+use PrestaShop\PrestaShop\Core\Hook\Hook;
 
 class FrontendAssetsHook extends AbstractHook
 {
@@ -28,7 +30,7 @@ class FrontendAssetsHook extends AbstractHook
 
     public function loadGtmScript(): string
     {
-        return Configuration::get(ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD);
+        return PrestaShopHook::exec(Hooks::TC_DISPLAY_BEFORE_GTM_HEAD_SNIPPET) . Configuration::get(ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD);
     }
 
     public function loadGtmFrame(): string

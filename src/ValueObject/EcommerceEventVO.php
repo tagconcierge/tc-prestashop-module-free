@@ -22,7 +22,13 @@ class EcommerceEventVO
 
     public const BEGIN_CHECKOUT = 'begin_checkout';
 
+    public const ADD_SHIPPING_INFO = 'add_shipping_info';
+
+    public const ADD_PAYMENT_INFO = 'add_payment_info';
+
     public const PURCHASE = 'purchase';
 
     public const USER_ID = 'user_id';
+
+    public const USER_DATA = 'user_data';
 }

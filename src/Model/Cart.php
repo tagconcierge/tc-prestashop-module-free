@@ -2,6 +2,7 @@
 
 namespace PrestaShop\Module\TagConciergeFree\Model;
 
+use Carrier;
 use Cart as PrestaShopCart;
 use Exception;
 
@@ -15,6 +16,9 @@ class Cart
 
     /** @var CartProduct[] */
     private $products = [];
+
+    /** @var string */
+    private $carrierName;
 
     public function getId(): ?int
     {
@@ -76,6 +80,18 @@ class Cart
         return $this;
     }
 
+    public function getCarrierName(): ?string
+    {
+        return $this->carrierName;
+    }
+
+    public function setCarrierName(string $carrierName): self
+    {
+        $this->carrierName = $carrierName;
+
+        return $this;
+    }
+
     public function getChecksum(): string
     {
         return hash('sha512', serialize($this));
@@ -97,6 +113,14 @@ class Cart
             ->setValue((float) $cartObject->getOrderTotal(false, PrestaShopCart::BOTH_WITHOUT_SHIPPING))
         ;
 
+        if (0 < (int) $cartObject->id_carrier) {
+            $carrier = new Carrier($cartObject->id_carrier);
+
+            if (null !== $carrier->name) {
+                $cart->setCarrierName($carrier->name);
+            }
+        }
+
         foreach ($cartObject->getProducts() as $product) {
             $cart->addProduct(CartProduct::fromArray($product));
         }
@@ -114,6 +138,7 @@ class Cart
             'id' => $this->getId(),
             'value' => $this->getValue(),
             'checksum' => $this->getChecksum(),
+            'carrier_name' => $this->getCarrierName(),
             'products' => $products,
         ];
     }

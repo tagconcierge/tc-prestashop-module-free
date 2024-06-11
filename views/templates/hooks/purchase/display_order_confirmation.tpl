@@ -1,3 +1,4 @@
+{hook h='tcDisplayBeforePurchaseEvent' order_id=$tc_order_id}
 {literal}
 <script type="text/javascript" data-tag-concierge-scripts>
   (function(dataLayer, tagConcierge) {
