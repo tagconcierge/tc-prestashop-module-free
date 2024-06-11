@@ -1,6 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.0.5] - 2024-06-11
+
+### Added
+- custom hook `tcDisplayBeforeGtmHeadSnippet` triggered before GTM snippet head display
+
+### Changed
+- module logo refresh
+
+### Fixed
+- issue with `add_to_cart` caused by LiteSpeed cache
+
 ## [1.0.4] - 2023-09-24
 
 ### Added
