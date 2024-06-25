@@ -71,6 +71,7 @@ class PurchaseHook extends AbstractEcommerceEventHook
 
         $orderModel = Order::fromOrderObject($order);
 
+        $this->getContext()->smarty->assign('tc_order_id', $order->id);
         $this->getContext()->smarty->assign('tc_order', $orderModel->toArray());
 
         $this->getContext()->cookie->tc_tracked_purchase_id = $order->id;

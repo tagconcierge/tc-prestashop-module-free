@@ -109,6 +109,8 @@ class ConfigurationVO
             EcommerceEventVO::REMOVE_FROM_CART => true,
             EcommerceEventVO::VIEW_CART => true,
             EcommerceEventVO::BEGIN_CHECKOUT => true,
+            EcommerceEventVO::ADD_SHIPPING_INFO => true,
+            EcommerceEventVO::ADD_PAYMENT_INFO => true,
             EcommerceEventVO::PURCHASE => false,
         ];
     }
