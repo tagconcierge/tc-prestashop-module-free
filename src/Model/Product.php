@@ -12,7 +12,7 @@ use Hook;
 
 class Product
 {
-    /** @var int|string */
+    /** @var int */
     private $id;
 
     /** @var string */
@@ -39,7 +39,7 @@ class Product
     /** @var int */
     private $stockQuantity;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -49,7 +49,7 @@ class Product
      *
      * @return $this
      */
-    public function setId($id): self
+    public function setId(int $id): self
     {
         $this->id = $id;
 
@@ -226,7 +226,7 @@ class Product
 
         $calledClass = get_called_class();
 
-        $product = (new $calledClass())
+        return (new $calledClass())
             ->setId($array['id_product'])
             ->setName(Tools::replaceAccentedChars($array['name']))
             ->setPrice((float) ($array['price_amount'] ?? $array['price']))
@@ -236,7 +236,5 @@ class Product
             ->setVariantId($array['id_product_attribute'])
             ->setStockQuantity($array['quantity'])
             ->setMinimalQuantity($array['minimal_quantity']);
-        
-        return $product;
     }
 }
