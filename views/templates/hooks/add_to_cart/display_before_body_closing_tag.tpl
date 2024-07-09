@@ -15,6 +15,7 @@
           brand: product['manufacturer_name'],
           category: product['category'],
           variant: attributes.join('___'),
+          variant_id: product['id_product_attribute'],
           stock_quantity: parseInt(product['stock_quantity']),
           minimal_quantity: parseInt(product['minimal_quantity']),
           cart_quantity: parseInt(product['cart_quantity']),

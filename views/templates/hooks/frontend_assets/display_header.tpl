@@ -1,3 +1,4 @@
+{literal}
 <script type="text/javascript" data-tag-concierge-scripts>
   window.dataLayer = window.dataLayer || [];
   window.tagConcierge = {
@@ -18,7 +19,7 @@
         item_category: product.category,
         item_variant: product.variant,
         quantity: product.minimal_quantity,
-      };
+      }
     },
     eventBase: () => {
       return {
@@ -75,3 +76,5 @@
     window.tagConcierge.originalXhrOpen.apply(this, arguments);
   };
 </script>
+{/literal}
+{hook h='tcDisplayAfterFrontendAssets'}

@@ -236,9 +236,7 @@ class Product
             ->setVariantId($array['id_product_attribute'])
             ->setStockQuantity($array['quantity'])
             ->setMinimalQuantity($array['minimal_quantity']);
-
-        Hook::exec(Hooks::TC_ACTION_PRODUCT_MODEL_CREATED, ['product' => $product]);
-
+        
         return $product;
     }
 }

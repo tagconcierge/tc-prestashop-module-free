@@ -19,6 +19,8 @@ class Hooks
     /** @var string */
     public const TC_DISPLAY_BEFORE_GTM_HEAD_SNIPPET = 'tcDisplayBeforeGtmHeadSnippet';
 
-    /** @var string */
-    public const TC_ACTION_PRODUCT_MODEL_CREATED = 'tcActionProductModelCreated';
+    /**
+     * @var string
+     */
+    public const TC_DISPLAY_AFTER_FRONTEND_ASSETS = 'tcDisplayAfterFrontendAssets';
 }
