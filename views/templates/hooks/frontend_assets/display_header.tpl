@@ -19,7 +19,7 @@
         item_category: product.category,
         item_variant: product.variant,
         quantity: product.minimal_quantity,
-      }
+      };
     },
     eventBase: () => {
       return {
