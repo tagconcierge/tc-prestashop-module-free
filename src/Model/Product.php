@@ -6,9 +6,7 @@ use ArrayAccess;
 use Category;
 use Context;
 use Manufacturer;
-use PrestaShop\Module\TagConciergeFree\Hook\Hooks;
 use Tools;
-use Hook;
 
 class Product
 {
