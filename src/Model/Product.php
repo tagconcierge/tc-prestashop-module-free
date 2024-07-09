@@ -6,11 +6,13 @@ use ArrayAccess;
 use Category;
 use Context;
 use Manufacturer;
+use PrestaShop\Module\TagConciergeFree\Hook\Hooks;
 use Tools;
+use Hook;
 
 class Product
 {
-    /** @var int */
+    /** @var int|string */
     private $id;
 
     /** @var string */
@@ -29,12 +31,15 @@ class Product
     private $variant;
 
     /** @var int */
+    private $variantId;
+
+    /** @var int */
     private $minimalQuantity;
 
     /** @var int */
     private $stockQuantity;
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
@@ -44,7 +49,7 @@ class Product
      *
      * @return $this
      */
-    public function setId(int $id): self
+    public function setId($id): self
     {
         $this->id = $id;
 
@@ -156,6 +161,18 @@ class Product
         return $this;
     }
 
+    public function getVariantId(): int
+    {
+        return $this->variantId;
+    }
+
+    public function setVariantId(int $variantId): self
+    {
+        $this->variantId = $variantId;
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         return [
@@ -165,6 +182,7 @@ class Product
             'brand' => $this->getBrand(),
             'category' => $this->getCategory(),
             'variant' => $this->getVariant(),
+            'variant_id' => $this->getVariantId(),
             'stock_quantity' => $this->getStockQuantity(),
             'minimal_quantity' => $this->getMinimalQuantity(),
         ];
@@ -188,6 +206,10 @@ class Product
             $array['attributes'] = '';
         }
 
+        if (false === isset($array['id_product_attribute']) || false === is_int($array['id_product_attribute'])) {
+            $array['id_product_attribute'] = 0;
+        }
+
         if (true === \is_array($array['attributes'])) {
             $attributes = array_map(static function ($attribute) {
                 return Tools::strtolower(trim(
@@ -204,14 +226,19 @@ class Product
 
         $calledClass = get_called_class();
 
-        return (new $calledClass())
+        $product = (new $calledClass())
             ->setId($array['id_product'])
             ->setName(Tools::replaceAccentedChars($array['name']))
             ->setPrice((float) ($array['price_amount'] ?? $array['price']))
             ->setBrand($manufacturer->name ?? '')
             ->setCategory($category->name ?? '')
             ->setVariant($variant)
+            ->setVariantId($array['id_product_attribute'])
             ->setStockQuantity($array['quantity'])
             ->setMinimalQuantity($array['minimal_quantity']);
+
+        Hook::exec(Hooks::TC_ACTION_PRODUCT_MODEL_CREATED, ['product' => $product]);
+
+        return $product;
     }
 }
