@@ -1,12 +1,2 @@
-<style>
-    #tc-debug-placeholder {
-        padding: 20px;
-        bottom: 0;
-        width: 100%;
-        height: 30%;
-        max-height: 30%;
-        background: white;
-    }
-</style>
-<div id="tc-debug-placeholder">
-</div>
+<div id="gtm-ecommerce-woo-event-inspector"></div>
+<script src="{$module_dir}views/js/gtm-event-inspector.js?v={$module_version}"></script>

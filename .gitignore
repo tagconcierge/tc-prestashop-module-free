@@ -1,5 +1,6 @@
 /.docker/
 /.idea/
+/.vscode/
 /dist
 /vendor/
 /config.xml
@@ -8,3 +9,6 @@
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
+/assets/node_modules
+/assets/dist
+.php_cs.cache

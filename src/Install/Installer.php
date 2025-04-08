@@ -3,7 +3,6 @@
 namespace PrestaShop\Module\TagConciergeFree\Install;
 
 use Configuration;
-use Module;
 use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 
 class Installer

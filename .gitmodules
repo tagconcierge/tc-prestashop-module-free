@@ -1,0 +1,3 @@
+[submodule "event-inspector"]
+	path = event-inspector
+	url = git@github.com:tagconcierge/event-inspector.git

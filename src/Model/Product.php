@@ -29,6 +29,9 @@ class Product
     private $variant;
 
     /** @var int */
+    private $variantId;
+
+    /** @var int */
     private $minimalQuantity;
 
     /** @var int */
@@ -156,6 +159,18 @@ class Product
         return $this;
     }
 
+    public function getVariantId(): int
+    {
+        return $this->variantId;
+    }
+
+    public function setVariantId(int $variantId): self
+    {
+        $this->variantId = $variantId;
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         return [
@@ -165,6 +180,7 @@ class Product
             'brand' => $this->getBrand(),
             'category' => $this->getCategory(),
             'variant' => $this->getVariant(),
+            'variant_id' => $this->getVariantId(),
             'stock_quantity' => $this->getStockQuantity(),
             'minimal_quantity' => $this->getMinimalQuantity(),
         ];
@@ -186,6 +202,10 @@ class Product
 
         if (false === isset($array['attributes'])) {
             $array['attributes'] = '';
+        }
+
+        if (false === isset($array['id_product_attribute']) || false === is_int($array['id_product_attribute'])) {
+            $array['id_product_attribute'] = 0;
         }
 
         if (true === \is_array($array['attributes'])) {
@@ -211,6 +231,7 @@ class Product
             ->setBrand($manufacturer->name ?? '')
             ->setCategory($category->name ?? '')
             ->setVariant($variant)
+            ->setVariantId($array['id_product_attribute'])
             ->setStockQuantity($array['quantity'])
             ->setMinimalQuantity($array['minimal_quantity']);
     }
