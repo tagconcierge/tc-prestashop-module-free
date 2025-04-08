@@ -1,0 +1,57 @@
+{
+  "name": "tc-prestashop-module-free",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "dev": "vue-cli-service build --watch --mode development",
+    "dev:serve": "vue-cli-service serve --port 8888",
+    "build:settings": "vue-cli-service build --dest dist/settings assets/js/modules/settings/index.js"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "axios": "^1.8.4",
+    "core-js": "^3.36.0",
+    "highlight.js": "^11.9.0",
+    "vue": "^3.4.21",
+    "vue-i18n": "^9.9.1",
+    "vue-router": "4",
+    "vuetify": "^3.5.4"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.23.10",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
+    "@vue/compiler-sfc": "^3.4.21",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.22.0",
+    "file-loader": "^6.2.0",
+    "sass": "^1.71.1",
+    "sass-loader": "^14.1.1",
+    "url-loader": "^4.1.1"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true,
+      "jquery": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

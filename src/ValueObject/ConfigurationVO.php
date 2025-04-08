@@ -22,6 +22,9 @@ class ConfigurationVO
     /** @var string */
     public const INSTANCE_UUID = 'TC_INSTANCE_UUID';
 
+    public const SERVER_CONTAINER_URL = 'TC_SERVER_CONTAINER_URL';
+
+    public const LOAD_GTM_FROM_SERVER_CONTAINER = 'TC_LOAD_GTM_FROM_SERVER_CONTAINER';
     /**
      * @var array
      */

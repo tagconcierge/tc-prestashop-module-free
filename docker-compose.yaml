@@ -34,3 +34,9 @@ services:
         entrypoint: bash
         volumes:
             - ./:/var/www
+    node-cli:
+        image: node:21
+        working_dir: /app
+        entrypoint: bash
+        volumes:
+            - ./assets:/app

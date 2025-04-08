@@ -46,7 +46,7 @@ class TagConciergeFree extends Module implements TagConciergeModuleInterface
 
         parent::__construct();
 
-        $this->displayName = $this->trans('Tag Concierge Free', [], 'Modules.TagConciergeFree.Admin');
+        $this->displayName = $this->trans('Tag Pilot Free', [], 'Modules.TagConciergeFree.Admin');
         $this->description = $this->trans('Leverage the Flexibility of Google Tag Manager to Measure and Optimize Sales Results (GA4 ready).', [], 'Modules.TagConciergeFree.Admin');
 
         $this->init();
