@@ -99,7 +99,7 @@ class SettingsController extends ModuleAdminController
             }
 
             $response['success'] = true;
-            $response['message'] = $this->l('Settings saved successfully');
+            $response['message'] = 'Settings saved successfully';
         } catch (Exception $e) {
             $response['message'] = $e->getMessage();
         }
