@@ -13,6 +13,9 @@ class DebugHook extends AbstractHook
     public function addDebugConsole(): string
     {
         if (true === $this->module->isDebug()) {
+            $this->getContext()->smarty->assign('module_dir', $this->module->getPath());
+            $this->getContext()->smarty->assign('module_version', $this->module->getVersion());
+
             return $this->module->render('hooks/debug_hook/display_before_body_closing_tag.tpl');
         }
 

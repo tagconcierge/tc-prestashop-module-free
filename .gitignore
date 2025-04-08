@@ -11,3 +11,4 @@
 ###< friendsofphp/php-cs-fixer ###
 /assets/node_modules
 /assets/dist
+.php_cs.cache

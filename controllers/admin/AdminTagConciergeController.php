@@ -7,17 +7,17 @@ class AdminTagConciergeController extends ModuleAdminController
     private $configMap = [
         'basic' => [
             ConfigurationVO::STATE => 'state',
-            ConfigurationVO::TRACK_USER_ID => 'trackUserId', 
-            ConfigurationVO::DEBUG => 'debug'
+            ConfigurationVO::TRACK_USER_ID => 'trackUserId',
+            ConfigurationVO::DEBUG => 'debug',
         ],
         'gtm_installation' => [
             ConfigurationVO::GTM_CONTAINER_SNIPPET_HEAD => 'gtmContainerSnippetHead',
-            ConfigurationVO::GTM_CONTAINER_SNIPPET_BODY => 'gtmContainerSnippetBody'
+            ConfigurationVO::GTM_CONTAINER_SNIPPET_BODY => 'gtmContainerSnippetBody',
         ],
         'server_side' => [
             ConfigurationVO::SERVER_CONTAINER_URL => 'serverContainerUrl',
-            ConfigurationVO::LOAD_GTM_FROM_SERVER_CONTAINER => 'loadGtmFromServerContainer'
-        ]
+            ConfigurationVO::LOAD_GTM_FROM_SERVER_CONTAINER => 'loadGtmFromServerContainer',
+        ],
     ];
 
     private $booleanProperties = ['state', 'trackUserId', 'debug', 'loadGtmFromServerContainer'];
@@ -35,11 +35,12 @@ class AdminTagConciergeController extends ModuleAdminController
         if (isset($this->configMap[$section])) {
             foreach ($this->configMap[$section] as $configKey => $frontendKey) {
                 $value = Configuration::get($configKey);
-                $settings[$frontendKey] = in_array($frontendKey, $this->booleanProperties) 
-                    ? (bool)$value 
+                $settings[$frontendKey] = in_array($frontendKey, $this->booleanProperties)
+                    ? (bool) $value
                     : $value;
             }
         }
+
         return $settings;
     }
 
@@ -65,14 +66,14 @@ class AdminTagConciergeController extends ModuleAdminController
     private function saveEventsConfiguration($formData)
     {
         $events = ConfigurationVO::getEvents();
-        
+
         foreach ($events as $event => $isPro) {
             $eventKey = sprintf('event_%s', $event);
             if (isset($formData[$eventKey])) {
                 $configKey = sprintf('TC_EVENT_STATE_BROWSER_%s', strtoupper($event));
                 $value = $formData[$eventKey];
-                
-                Configuration::updateValue($configKey, (bool)$value);
+
+                Configuration::updateValue($configKey, (bool) $value);
             }
         }
     }
@@ -84,7 +85,7 @@ class AdminTagConciergeController extends ModuleAdminController
         try {
             $section = Tools::getValue('section', 'all');
             $formData = $_POST;
-            
+
             $this->saveSectionSettings($section, $formData);
 
             if ($section === 'basic') {
@@ -97,7 +98,7 @@ class AdminTagConciergeController extends ModuleAdminController
             $response['message'] = $e->getMessage();
         }
 
-        die(json_encode($response));
+        exit(json_encode($response));
     }
 
     public function ajaxProcessGetSettings()
@@ -107,7 +108,7 @@ class AdminTagConciergeController extends ModuleAdminController
         try {
             $section = Tools::getValue('section', 'all');
             $frontendSettings = [];
-            
+
             $frontendSettings = $this->getSectionSettings($section);
 
             $response['success'] = true;
@@ -116,7 +117,7 @@ class AdminTagConciergeController extends ModuleAdminController
             $response['message'] = $e->getMessage();
         }
 
-        die(json_encode($response));
+        exit(json_encode($response));
     }
 
     public function ajaxProcessGetEvents()
@@ -126,15 +127,15 @@ class AdminTagConciergeController extends ModuleAdminController
         try {
             $events = ConfigurationVO::getEvents();
             $eventsList = [];
-            
+
             foreach ($events as $eventName => $isPro) {
                 $configKey = sprintf('TC_EVENT_STATE_BROWSER_%s', strtoupper($eventName));
-                $enabled = Configuration::hasKey($configKey) ? (bool)Configuration::get($configKey) : true;
-                
+                $enabled = Configuration::hasKey($configKey) ? (bool) Configuration::get($configKey) : true;
+
                 $eventsList[] = [
                     'name' => $eventName,
                     'isPro' => $isPro,
-                    'enabled' => $enabled
+                    'enabled' => $enabled,
                 ];
             }
 
@@ -144,6 +145,6 @@ class AdminTagConciergeController extends ModuleAdminController
             $response['message'] = $e->getMessage();
         }
 
-        die(json_encode($response));
+        exit(json_encode($response));
     }
 }

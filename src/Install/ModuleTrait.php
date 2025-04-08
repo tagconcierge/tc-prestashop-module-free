@@ -4,12 +4,12 @@ namespace PrestaShop\Module\TagConciergeFree\Install;
 
 use Configuration as PrestaShopConfiguration;
 use PrestaShop\Module\TagConciergeFree\Hook\Event\AbstractEcommerceEventHook;
+use PrestaShop\Module\TagConciergeFree\Hook\HookProvider;
 use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 use PrestaShopLogger;
 use RuntimeException;
 use SmartyException;
 use Tools as PrestaShopTools;
-use PrestaShop\Module\TagConciergeFree\Hook\HookProvider;
 
 trait ModuleTrait
 {
@@ -71,6 +71,16 @@ trait ModuleTrait
         $this->context->smarty->assign('module_version', $this->version);
 
         return $this->render('admin/configure.tpl');
+    }
+
+    public function getPath(): string
+    {
+        return $this->_path;
+    }
+
+    public function getVersion(): string
+    {
+        return $this->version;
     }
 
     public function getHooks(): array

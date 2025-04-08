@@ -1,2 +1,2 @@
 <div id="gtm-ecommerce-woo-event-inspector"></div>
-<script src="/modules/tagconciergefree/views/js/gtm-event-inspector.js"></script>
+<script src="{$module_dir}views/js/gtm-event-inspector.js?v={$module_version}"></script>
