@@ -59,8 +59,7 @@
         </v-card-actions>
       </v-card>
     </template>
-    
-    <!-- Always render notifications outside of conditionals -->
+
     <v-snackbar
       v-model="showSuccess"
       color="success"

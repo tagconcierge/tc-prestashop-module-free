@@ -74,8 +74,7 @@
             v{{ preset.version }}
           </v-chip>
         </div>
-        
-        <!-- Przycisk Download dla presetów dostępnych w wersji FREE -->
+
         <div class="action-buttons" @click.stop>
           <v-btn
             v-if="!isDisabled || (preset.isServer && isPro)"
@@ -94,8 +93,7 @@
         </div>
       </v-card-text>
     </v-card>
-    
-    <!-- Przycisk Upgrade dla presetów PRO w wersji FREE, pozycjonowany absolutnie -->
+
     <v-btn
       v-if="shouldShowUpgradeButton"
       size="x-small"
@@ -108,8 +106,7 @@
       UPGRADE TO PRO
     </v-btn>
   </div>
-  
-  <!-- Snackbar notyfikacje -->
+
   <v-snackbar
     v-model="showSuccess"
     color="success"
