@@ -1,6 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-04-09
+
+### Added
+- PrestaShop 9 compatibility
+
+### Changed
+- settings interface rework
+- event inspector console rework
+
+### Fixed
+
 ## [1.0.5] - 2024-06-11
 
 ### Added
