@@ -1,7 +1,7 @@
 {* Tag Concierge Settings *}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
 <div id="tag-concierge-settings-app" 
-    data-admin-link="{$link->getAdminLink('AdminTagConcierge')}"
+    data-admin-link="{$link->getAdminLink('TagConciergeFreeAdminSettings')}"
     data-instance-uuid="{$instance_uuid|escape:'html':'UTF-8'}"
     data-pro="{$is_pro|escape:'html':'UTF-8'}"
     data-module-name="{$module_name|escape:'html':'UTF-8'}"

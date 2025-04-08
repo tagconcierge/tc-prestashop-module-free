@@ -1,8 +1,14 @@
 <?php
 
-use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
+namespace PrestaShop\Module\TagConciergeFree\Controller\Admin;
 
-class AdminTagConciergeController extends ModuleAdminController
+use Configuration;
+use Exception;
+use ModuleAdminController;
+use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
+use Tools;
+
+class SettingsController extends ModuleAdminController
 {
     private $configMap = [
         'basic' => [
