@@ -10,6 +10,8 @@ use Order as PrestaShopOrder;
 
 class Order
 {
+    private const CUSTOMER_RETURNING_DAYS_LIMIT = 540;
+
     /** @var int */
     private $id;
 
@@ -39,6 +41,9 @@ class Order
 
     /** @var OrderProduct[] */
     private $products;
+
+    /** @var string */
+    private $customerType;
 
     public function getId(): int
     {
@@ -179,6 +184,18 @@ class Order
         return $this;
     }
 
+    public function getCustomerType(): string
+    {
+        return $this->customerType;
+    }
+
+    public function setCustomerType(string $customerType): self
+    {
+        $this->customerType = $customerType;
+
+        return $this;
+    }
+
     /**
      * @return static
      *
@@ -188,6 +205,23 @@ class Order
     {
         $order = new self();
         $context = Context::getContext();
+
+        $customerType = 'new';
+        $customerId = (int) $orderObject->id_customer;
+
+        if ($customerId > 0) {
+            $customerOrders = PrestaShopOrder::getCustomerOrders($customerId);
+            $dateLimiter = date('Y-m-d H:i:s', strtotime('-' . self::CUSTOMER_RETURNING_DAYS_LIMIT . ' days'));
+
+            if (is_array($customerOrders)) {
+                foreach ($customerOrders as $customerOrder) {
+                    if ((int) $customerOrder['id_order'] !== (int) $orderObject->id && $customerOrder['date_add'] >= $dateLimiter) {
+                        $customerType = 'returning';
+                        break;
+                    }
+                }
+            }
+        }
 
         $cartObject = new PrestaShopCart(
             PrestaShopOrder::getCartIdStatic($orderObject->id, $context->customer->id)
@@ -204,6 +238,7 @@ class Order
 
         $order
             ->setId($orderObject->id)
+            ->setCustomerType($customerType)
             ->setStatus($orderStatus)
             ->setAffiliation(Configuration::get('PS_SHOP_NAME'))
             ->setPaymentMethod($orderObject->payment)
@@ -237,6 +272,7 @@ class Order
             'shipping' => $this->getShipping(),
             'coupon' => $this->getCoupon(),
             'products' => $products,
+            'customer_type' => $this->getCustomerType(),
         ];
     }
 }
