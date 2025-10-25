@@ -39,7 +39,7 @@ class TagConciergeFree extends Module implements TagConciergeModuleInterface
     {
         $this->name = 'tagconciergefree';
         $this->author = 'Tag Concierge';
-        $this->version = '1.1.0';
+        $this->version = '1.1.1';
         $this->ps_versions_compliancy = ['min' => '1.7.1.0', 'max' => _PS_VERSION_];
         $this->bootstrap = true;
         $this->tab = 'advertising_marketing';
