@@ -7,6 +7,7 @@ use Category;
 use Context;
 use Manufacturer;
 use Tools;
+use Product as PrestaShopProduct;
 
 class Product
 {
@@ -208,7 +209,22 @@ class Product
             $array['id_product_attribute'] = 0;
         }
 
-        if (true === \is_array($array['attributes'])) {
+        if (0 !== $array['id_product_attribute'] && true === empty($array['attributes'])) {
+            $product = new PrestaShopProduct($array['id_product']);
+            $groups = $product->getAttributesGroups($context->language->id);
+
+            $groups = array_filter($groups, function ($group) use ($array) {
+                return $group['id_product_attribute'] === $array['id_product_attribute'];
+            });
+
+            $attributes = array_map(static function ($group) {
+                return Tools::strtolower(trim(
+                    sprintf('%s_%s', $group['group_name'], $group['attribute_name'])
+                ));
+            }, $groups);
+
+            $variant = implode('___', $attributes);
+        } else if(true === \is_array($array['attributes'])) {
             $attributes = array_map(static function ($attribute) {
                 return Tools::strtolower(trim(
                     sprintf('%s_%s', $attribute['group'], $attribute['name'])
@@ -220,6 +236,8 @@ class Product
             $variant = Tools::strtolower(trim(
                 str_replace([' : ', '- '], ['_', '___'], $array['attributes'])
             ));
+
+            $variant = str_replace(': ', '_', $variant);
         }
 
         $calledClass = get_called_class();
