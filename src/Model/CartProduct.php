@@ -46,6 +46,7 @@ class CartProduct extends Product
         $cartProduct = parent::fromArray($array);
 
         return $cartProduct
+            ->setPrice((float) ($array['price_wt'] ?? $array['price_amount'] ?? $array['price']))
             ->setStockQuantity($array['stock_quantity'])
             ->setCartQuantity($array['cart_quantity'])
             ;
