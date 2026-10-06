@@ -23,10 +23,17 @@ class SettingsController extends ModuleAdminController
         'server_side' => [
             ConfigurationVO::SERVER_CONTAINER_URL => 'serverContainerUrl',
             ConfigurationVO::LOAD_GTM_FROM_SERVER_CONTAINER => 'loadGtmFromServerContainer',
+            ConfigurationVO::GA4_CLIENT_ACTIVATION_PATH => 'ga4ClientActivationPath',
+            ConfigurationVO::GTM_SERVER_PREVIEW_HEADER => 'gtmServerPreviewHeader',
+            ConfigurationVO::SERVER_PURCHASE_BACKGROUND => 'serverPurchaseBackground',
+        ],
+        'item_id' => [
+            ConfigurationVO::ITEM_ID_SOURCE => 'itemIdSource',
+            ConfigurationVO::ITEM_ID_PATTERN => 'itemIdPattern',
         ],
     ];
 
-    private $booleanProperties = ['state', 'trackUserId', 'debug', 'loadGtmFromServerContainer'];
+    private $booleanProperties = ['state', 'trackUserId', 'debug', 'loadGtmFromServerContainer', 'serverPurchaseBackground'];
     private $htmlProperties = ['gtmContainerSnippetHead', 'gtmContainerSnippetBody'];
 
     public function __construct()
@@ -41,6 +48,18 @@ class SettingsController extends ModuleAdminController
         if (isset($this->configMap[$section])) {
             foreach ($this->configMap[$section] as $configKey => $frontendKey) {
                 $value = Configuration::get($configKey);
+                if ('itemIdSource' === $frontendKey && false === in_array($value, ConfigurationVO::getItemIdSources(), true)) {
+                    $value = ConfigurationVO::ITEM_ID_SOURCE_ID;
+                }
+                if ('itemIdPattern' === $frontendKey && false === $value) {
+                    $value = '';
+                }
+                if ('ga4ClientActivationPath' === $frontendKey && (false === $value || '' === $value)) {
+                    $value = '/mp';
+                }
+                if ('gtmServerPreviewHeader' === $frontendKey && false === $value) {
+                    $value = '';
+                }
                 $settings[$frontendKey] = in_array($frontendKey, $this->booleanProperties)
                     ? (bool) $value
                     : $value;
@@ -55,6 +74,9 @@ class SettingsController extends ModuleAdminController
         if (isset($this->configMap[$section])) {
             foreach ($this->configMap[$section] as $configKey => $frontendKey) {
                 if (isset($formData[$frontendKey])) {
+                    if ('itemIdSource' === $frontendKey && false === in_array($formData[$frontendKey], ConfigurationVO::getItemIdSources(), true)) {
+                        throw new Exception('Invalid item id source.');
+                    }
                     $isHtml = in_array($frontendKey, $this->htmlProperties);
                     if (true === $isHtml) {
                         $usePurifier = Configuration::get('PS_USE_HTMLPURIFIER');
@@ -65,6 +87,17 @@ class SettingsController extends ModuleAdminController
                         Configuration::updateValue('PS_USE_HTMLPURIFIER', $usePurifier);
                     }
                 }
+            }
+        }
+    }
+
+    private function saveServerEventsConfiguration($formData)
+    {
+        foreach (ConfigurationVO::getServerEvents() as $event => $isPro) {
+            $eventKey = sprintf('event_server_%s', $event);
+            if (isset($formData[$eventKey])) {
+                $configKey = sprintf('TC_EVENT_STATE_SERVER_%s', strtoupper($event));
+                Configuration::updateValue($configKey, (bool) $formData[$eventKey]);
             }
         }
     }
@@ -96,6 +129,7 @@ class SettingsController extends ModuleAdminController
 
             if ($section === 'basic') {
                 $this->saveEventsConfiguration($formData);
+                $this->saveServerEventsConfiguration($formData);
             }
 
             $response['success'] = true;
@@ -119,6 +153,31 @@ class SettingsController extends ModuleAdminController
 
             $response['success'] = true;
             $response['data'] = $frontendSettings;
+        } catch (Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
+
+        exit(json_encode($response));
+    }
+
+    public function ajaxProcessGetServerEvents()
+    {
+        $response = ['success' => false, 'data' => null];
+
+        try {
+            $eventsList = [];
+
+            foreach (ConfigurationVO::getServerEvents() as $eventName => $isPro) {
+                $configKey = sprintf('TC_EVENT_STATE_SERVER_%s', strtoupper($eventName));
+                $eventsList[] = [
+                    'name' => $eventName,
+                    'isPro' => $isPro,
+                    'enabled' => '1' === (string) Configuration::get($configKey),
+                ];
+            }
+
+            $response['success'] = true;
+            $response['data'] = $eventsList;
         } catch (Exception $e) {
             $response['message'] = $e->getMessage();
         }

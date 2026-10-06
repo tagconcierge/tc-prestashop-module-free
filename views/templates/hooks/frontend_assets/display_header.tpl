@@ -1,3 +1,6 @@
+<script type="text/javascript" data-tag-concierge-scripts>
+  window.tagConciergeItemIdConfig = {$tc_item_id_config|default:'{"itemIdSource":"id","itemIdPattern":""}' nofilter};
+</script>
 {literal}
 <script type="text/javascript" data-tag-concierge-scripts>
   window.dataLayer = window.dataLayer || [];
@@ -10,9 +13,39 @@
     lastViewedProduct: null,
     prestashopCart: { ...prestashop.cart },
     eventListeners: {},
+    config: window.tagConciergeItemIdConfig || { itemIdSource: 'id', itemIdPattern: '' },
+    resolveItemId: (product) => {
+      const config = window.tagConcierge.config || { itemIdSource: 'id', itemIdPattern: '' };
+      const source = config.itemIdSource || 'id';
+      const pattern = (config.itemIdPattern || '').trim();
+      const id = null != product.id ? String(product.id) : '';
+      const variantId = null != product.variant_id ? String(product.variant_id) : '0';
+      const sku = (product.sku || '').toString().trim();
+      const variantSku = (product.variant_sku || '').toString().trim();
+      const resolvedSku = '' !== sku ? sku : id;
+      const resolvedVariantSku = '' !== variantSku ? variantSku : resolvedSku;
+
+      if ('sku' === source || ('pattern' === source && '' === pattern)) {
+        return resolvedSku;
+      }
+
+      if ('variant_sku' === source) {
+        return resolvedVariantSku;
+      }
+
+      if ('pattern' === source) {
+        return pattern
+          .replace(/\{variant_id\}/g, variantId)
+          .replace(/\{variant_sku\}/g, resolvedVariantSku)
+          .replace(/\{sku\}/g, resolvedSku)
+          .replace(/\{id\}/g, id);
+      }
+
+      return id;
+    },
     mapProductToItem: (product) => {
       return {
-        item_id: product.id,
+        item_id: window.tagConcierge.resolveItemId(product),
         item_name: product.name,
         price: parseFloat(product.price),
         item_brand: product.brand,

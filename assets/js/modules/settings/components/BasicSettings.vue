@@ -120,6 +120,49 @@
             </v-list-item>
           </v-list>
         </div>
+
+        <div v-if="serverEventsLoaded">
+          <h2 class="text-h6 mt-6 mb-4">Server-Side Events</h2>
+          <div class="text-body-2 text-grey mb-4">
+            Sent from the shop to the GTM server container. Purchase is sent once per order id.
+          </div>
+          <v-divider class="mb-3" />
+
+          <v-list>
+            <v-list-item v-for="(event, index) in serverEvents" :key="event.name">
+              <v-row align="center">
+                <v-col cols="8">
+                  <div class="text-subtitle-1 font-weight-medium">
+                    {{ formatEventName(event.name) }}
+                    <v-chip v-if="event.isPro && !isPro" color="warning" size="small" class="ml-2">PRO</v-chip>
+                  </div>
+                  <div class="text-caption text-grey">
+                    Send {{ formatEventName(event.name).toLowerCase() }} to the GTM server container when the order is paid. The order id is the deduplication key.
+                  </div>
+                  <a
+                    v-if="event.isPro && !isPro"
+                    :href="urls.externalLinks.pricing"
+                    target="_blank"
+                    class="text-caption upgrade-link"
+                  >
+                    <v-icon size="small" class="mr-1">mdi-arrow-up-bold-circle</v-icon>
+                    Upgrade to PRO
+                  </a>
+                </v-col>
+                <v-col cols="4" class="text-right">
+                  <v-switch
+                    v-model="event.enabled"
+                    :disabled="event.isPro && !isPro"
+                    color="primary"
+                    hide-details
+                    inset
+                  />
+                </v-col>
+              </v-row>
+              <v-divider v-if="index < serverEvents.length - 1" class="my-3" />
+            </v-list-item>
+          </v-list>
+        </div>
         
         <v-card-actions class="mt-8 px-0">
           <v-spacer />
@@ -200,6 +243,8 @@ const errorMessage = ref('');
 const events = ref([]);
 const eventsLoading = ref(false);
 const eventsLoaded = ref(false);
+const serverEvents = ref([]);
+const serverEventsLoaded = ref(false);
 
 const localSettings = reactive({
   state: false,
@@ -256,6 +301,27 @@ const loadEvents = async () => {
     }
     
     eventsLoaded.value = true;
+
+    const serverEventsList = await apiService.getServerEvents();
+    serverEvents.value = serverEventsList.map(event => ({
+      ...event,
+      enabled: typeof event.enabled === 'string'
+        ? event.enabled === '1' || event.enabled === 'true'
+        : Boolean(event.enabled),
+      isPro: typeof event.isPro === 'string'
+        ? event.isPro === '1' || event.isPro === 'true'
+        : Boolean(event.isPro)
+    }));
+
+    if (!isPro) {
+      serverEvents.value.forEach(event => {
+        if (event.isPro) {
+          event.enabled = false;
+        }
+      });
+    }
+
+    serverEventsLoaded.value = true;
   } catch (error) {
     console.error('Error loading events:', error);
     errorMessage.value = error.message || 'Failed to load events';
@@ -279,6 +345,11 @@ const saveSettings = async () => {
     events.value.forEach(event => {
       const enabled = (event.isPro && !isPro) ? false : event.enabled;
       settingsToSave[`event_${event.name}`] = enabled;
+    });
+
+    serverEvents.value.forEach(event => {
+      const enabled = (event.isPro && !isPro) ? false : event.enabled;
+      settingsToSave[`event_server_${event.name}`] = enabled;
     });
 
     await apiService.saveSettings('basic', settingsToSave);

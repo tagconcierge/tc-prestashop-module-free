@@ -49,6 +49,34 @@
               @update:model-value="validateServerSettings"
             />
           </div>
+
+          <div class="mb-4">
+            <div class="text-subtitle-1 font-weight-medium mb-2">
+              GA4 Client Activation Path
+            </div>
+            <v-text-field
+              v-model="localSettings.ga4ClientActivationPath"
+              placeholder="/mp"
+              variant="outlined"
+              hint="Path of the GA4 client in the server container. Presets use /mp."
+              persistent-hint
+              :disabled="!isPro"
+            />
+          </div>
+
+          <div class="mb-4">
+            <div class="text-subtitle-1 font-weight-medium mb-2">
+              X-Gtm-Server-Preview header
+            </div>
+            <v-text-field
+              v-model="localSettings.gtmServerPreviewHeader"
+              placeholder="header value"
+              variant="outlined"
+              hint="Paste the preview header from GTM to see server events in Preview. Leave empty in production."
+              persistent-hint
+              :disabled="!isPro"
+            />
+          </div>
           
           <div class="mb-4">
             <v-divider class="my-4"></v-divider>
@@ -88,6 +116,47 @@
             </v-list>
             <div v-if="serverUrlWarning" class="mt-2 text-caption error--text">
               {{ serverUrlWarning }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <v-divider class="my-4"></v-divider>
+            <div class="text-h6 mb-4">
+              Purchase queue
+              <v-chip
+                v-if="!isPro"
+                color="warning"
+                size="small"
+                class="ml-2"
+              >
+                PRO
+              </v-chip>
+            </div>
+            <div class="text-body-2 text-grey mb-4">
+              Optional. When off, purchase is sent immediately after the order is paid. When on, the shop request does not wait for the server container. A cron job sends queued orders.
+            </div>
+            <v-list>
+              <v-list-item>
+                <v-row align="center">
+                  <v-col cols="8">
+                    <div class="text-subtitle-1 font-weight-medium">Send purchase in the background</div>
+                    <div class="text-caption text-grey">The checkout request does not wait for the server container.</div>
+                  </v-col>
+                  <v-col cols="4" class="text-right">
+                    <v-switch
+                      v-model="localSettings.serverPurchaseBackground"
+                      color="primary"
+                      hide-details
+                      inset
+                      :disabled="!isPro"
+                    />
+                  </v-col>
+                </v-row>
+              </v-list-item>
+            </v-list>
+            <div v-if="localSettings.serverPurchaseBackground && serverPurchaseCronUrl" class="text-caption text-grey mt-2">
+              Call this URL every minute, or add the module cron task in PrestaShop Cron jobs:
+              <div class="mt-1">{{ serverPurchaseCronUrl }}</div>
             </div>
           </div>
         </v-form>
@@ -159,6 +228,7 @@ import urls from '../config/urls';
 
 const apiService = inject('apiService');
 const isPro = inject('isPro', false);
+const serverPurchaseCronUrl = inject('serverPurchaseCronUrl', '');
 
 const loading = ref(true);
 const saving = ref(false);
@@ -175,7 +245,10 @@ const urlRules = [
 
 const localSettings = reactive({
   serverContainerUrl: '',
-  loadGtmFromServerContainer: false
+  loadGtmFromServerContainer: false,
+  ga4ClientActivationPath: '/mp',
+  gtmServerPreviewHeader: '',
+  serverPurchaseBackground: false
 });
 
 const isValidServerUrl = computed(() => {
@@ -213,6 +286,9 @@ const loadSettings = async () => {
     if (data && isPro) {
       localSettings.serverContainerUrl = data.serverContainerUrl || '';
       localSettings.loadGtmFromServerContainer = data.loadGtmFromServerContainer || false;
+      localSettings.ga4ClientActivationPath = data.ga4ClientActivationPath || '/mp';
+      localSettings.gtmServerPreviewHeader = data.gtmServerPreviewHeader || '';
+      localSettings.serverPurchaseBackground = data.serverPurchaseBackground || false;
 
       if (localSettings.loadGtmFromServerContainer && !isValidServerUrl.value) {
         localSettings.loadGtmFromServerContainer = false;
@@ -220,6 +296,9 @@ const loadSettings = async () => {
     } else {
       localSettings.serverContainerUrl = '';
       localSettings.loadGtmFromServerContainer = false;
+      localSettings.ga4ClientActivationPath = '/mp';
+      localSettings.gtmServerPreviewHeader = '';
+      localSettings.serverPurchaseBackground = false;
     }
   } catch (error) {
     errorMessage.value = error.message || 'Failed to load settings';
@@ -242,9 +321,15 @@ const saveSettings = async () => {
   
   saving.value = true;
   try {
-    const settingsToSave = isPro 
-      ? localSettings 
-      : { serverContainerUrl: '', loadGtmFromServerContainer: false };
+    const settingsToSave = isPro
+      ? localSettings
+      : {
+        serverContainerUrl: '',
+        loadGtmFromServerContainer: false,
+        ga4ClientActivationPath: '/mp',
+        gtmServerPreviewHeader: '',
+        serverPurchaseBackground: false
+      };
     
     await apiService.saveSettings('server_side', settingsToSave);
     showSuccess.value = true;

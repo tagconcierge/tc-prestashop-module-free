@@ -5,6 +5,7 @@ import SupportSettings from './components/SupportSettings.vue';
 import GtmPresets from './components/GtmPresets.vue';
 import GtmServerSide from './components/GtmServerSide.vue';
 import GtmServerPresets from './components/GtmServerPresets.vue';
+import ItemIdSettings from './components/ItemIdSettings.vue';
 
 const routes = [
   {
@@ -26,6 +27,10 @@ const routes = [
   {
     path: '/settings/server-presets',
     component: GtmServerPresets
+  },
+  {
+    path: '/settings/item-id',
+    component: ItemIdSettings
   },
   {
     path: '/settings/support',

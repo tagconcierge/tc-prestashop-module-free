@@ -110,7 +110,7 @@ class Cart
 
         $cart
             ->setId($cartObject->id)
-            ->setValue((float) $cartObject->getOrderTotal(false, PrestaShopCart::BOTH_WITHOUT_SHIPPING))
+            ->setValue((float) $cartObject->getOrderTotal(true, PrestaShopCart::BOTH_WITHOUT_SHIPPING))
         ;
 
         if (0 < (int) $cartObject->id_carrier) {

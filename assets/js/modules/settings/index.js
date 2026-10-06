@@ -53,6 +53,7 @@ app.provide('isPro', isPro);
 app.provide('moduleName', moduleName);
 app.provide('moduleVersion', moduleVersion);
 app.provide('instanceUuid', instanceUuid);
+app.provide('serverPurchaseCronUrl', appElement.getAttribute('data-cron-url') || '');
 
 app.use(router);
 app.use(vuetify);
