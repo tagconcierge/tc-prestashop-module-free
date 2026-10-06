@@ -43,6 +43,19 @@ class ApiService {
     }
   }
 
+  async getServerEvents() {
+    try {
+      const response = await axios.get(`${this.adminLink}&action=GetServerEvents&ajax=1`);
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Failed to load server events');
+      }
+      return response.data.data;
+    } catch (error) {
+      console.error('Error fetching server events:', error);
+      throw error;
+    }
+  }
+
   async saveSettings(section, settings) {
     try {
       const formData = new URLSearchParams();

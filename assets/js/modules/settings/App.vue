@@ -64,6 +64,7 @@ const tabs = [
   { value: 'presets', title: 'GTM Presets', icon: 'mdi-tag-multiple', path: '/settings/presets' },
   { value: 'server', title: 'Server-Side GTM', icon: 'mdi-server-network', path: '/settings/server' },
   { value: 'server-presets', title: 'GTM Server Presets', icon: 'mdi-server-plus', path: '/settings/server-presets' },
+  { value: 'item-id', title: 'Item ID', icon: 'mdi-identifier', path: '/settings/item-id' },
   { value: 'support', title: 'Support', icon: 'mdi-help-circle-outline', path: '/settings/support' },
 ];
 

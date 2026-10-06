@@ -16,6 +16,8 @@
           category: product['category'],
           variant: attributes.join('___'),
           variant_id: product['id_product_attribute'],
+          sku: product['tc_sku'] || (!parseInt(product['id_product_attribute'], 10) ? (product['reference'] || '') : ''),
+          variant_sku: product['tc_variant_sku'] || (parseInt(product['id_product_attribute'], 10) ? (product['reference'] || '') : ''),
           stock_quantity: parseInt(product['stock_quantity']),
           minimal_quantity: parseInt(product['minimal_quantity']),
           cart_quantity: parseInt(product['cart_quantity']),

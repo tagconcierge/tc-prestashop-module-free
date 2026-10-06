@@ -4,8 +4,11 @@ namespace PrestaShop\Module\TagConciergeFree\Model;
 
 use ArrayAccess;
 use Category;
+use Combination;
+use Configuration;
 use Context;
 use Manufacturer;
+use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 use Tools;
 use Product as PrestaShopProduct;
 
@@ -31,6 +34,15 @@ class Product
 
     /** @var int */
     private $variantId;
+
+    /** @var string */
+    private $sku = '';
+
+    /** @var string */
+    private $variantSku = '';
+
+    /** @var array */
+    private static $referenceCache = [];
 
     /** @var int */
     private $minimalQuantity;
@@ -172,6 +184,88 @@ class Product
         return $this;
     }
 
+    public function getSku(): string
+    {
+        return $this->sku;
+    }
+
+    public function setSku(string $sku): self
+    {
+        $this->sku = $sku;
+
+        return $this;
+    }
+
+    public function getVariantSku(): string
+    {
+        return $this->variantSku;
+    }
+
+    public function setVariantSku(string $variantSku): self
+    {
+        $this->variantSku = $variantSku;
+
+        return $this;
+    }
+
+    /**
+     * @return array{sku: string, variant_sku: string}
+     */
+    public static function resolveReferences(int $productId, int $variantId): array
+    {
+        $cacheKey = $productId . '-' . $variantId;
+
+        if (true === isset(self::$referenceCache[$cacheKey])) {
+            return self::$referenceCache[$cacheKey];
+        }
+
+        $product = new PrestaShopProduct($productId);
+        $sku = (string) $product->reference;
+
+        $variantSku = '';
+        if (0 < $variantId) {
+            $combination = new Combination($variantId);
+            $variantSku = (string) $combination->reference;
+        }
+
+        self::$referenceCache[$cacheKey] = [
+            'sku' => $sku,
+            'variant_sku' => $variantSku,
+        ];
+
+        return self::$referenceCache[$cacheKey];
+    }
+
+    public static function resolveItemId(int $productId, int $variantId, string $sku, string $variantSku): string
+    {
+        $id = (string) $productId;
+        $sku = trim($sku);
+        $variantSku = trim($variantSku);
+        $resolvedSku = '' !== $sku ? $sku : $id;
+        $resolvedVariantSku = '' !== $variantSku ? $variantSku : $resolvedSku;
+        $source = Configuration::get(ConfigurationVO::ITEM_ID_SOURCE);
+        $pattern = trim((string) Configuration::get(ConfigurationVO::ITEM_ID_PATTERN));
+
+        if (ConfigurationVO::ITEM_ID_SOURCE_SKU === $source || (ConfigurationVO::ITEM_ID_SOURCE_PATTERN === $source && '' === $pattern)) {
+            return $resolvedSku;
+        }
+
+        if (ConfigurationVO::ITEM_ID_SOURCE_VARIANT_SKU === $source) {
+            return $resolvedVariantSku;
+        }
+
+        if (ConfigurationVO::ITEM_ID_SOURCE_PATTERN === $source) {
+            return strtr($pattern, [
+                '{variant_id}' => (string) $variantId,
+                '{variant_sku}' => $resolvedVariantSku,
+                '{sku}' => $resolvedSku,
+                '{id}' => $id,
+            ]);
+        }
+
+        return $id;
+    }
+
     public function toArray(): array
     {
         return [
@@ -182,6 +276,8 @@ class Product
             'category' => $this->getCategory(),
             'variant' => $this->getVariant(),
             'variant_id' => $this->getVariantId(),
+            'sku' => $this->getSku(),
+            'variant_sku' => $this->getVariantSku(),
             'stock_quantity' => $this->getStockQuantity(),
             'minimal_quantity' => $this->getMinimalQuantity(),
         ];
@@ -205,16 +301,17 @@ class Product
             $array['attributes'] = '';
         }
 
-        if (false === isset($array['id_product_attribute']) || false === is_int($array['id_product_attribute'])) {
-            $array['id_product_attribute'] = 0;
-        }
+        $productId = (int) $array['id_product'];
+        $variantId = (int) ($array['id_product_attribute'] ?? 0);
+        $references = self::resolveReferences($productId, $variantId);
+        $array['id_product_attribute'] = $variantId;
 
         if (0 !== $array['id_product_attribute'] && true === empty($array['attributes'])) {
             $product = new PrestaShopProduct($array['id_product']);
             $groups = $product->getAttributesGroups($context->language->id);
 
             $groups = array_filter($groups, function ($group) use ($array) {
-                return $group['id_product_attribute'] === $array['id_product_attribute'];
+                return (int) $group['id_product_attribute'] === $array['id_product_attribute'];
             });
 
             $attributes = array_map(static function ($group) {
@@ -250,6 +347,8 @@ class Product
             ->setCategory($category->name ?? '')
             ->setVariant($variant)
             ->setVariantId($array['id_product_attribute'])
+            ->setSku($references['sku'])
+            ->setVariantSku($references['variant_sku'])
             ->setStockQuantity($array['quantity'])
             ->setMinimalQuantity($array['minimal_quantity']);
     }

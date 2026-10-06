@@ -23,4 +23,7 @@ class Hooks
      * @var string
      */
     public const TC_DISPLAY_AFTER_FRONTEND_ASSETS = 'tcDisplayAfterFrontendAssets';
+
+    /** @var string */
+    public const ACTION_GET_PRODUCT_PROPERTIES_AFTER = 'actionGetProductPropertiesAfter';
 }

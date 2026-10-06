@@ -25,6 +25,24 @@ class ConfigurationVO
     public const SERVER_CONTAINER_URL = 'TC_SERVER_CONTAINER_URL';
 
     public const LOAD_GTM_FROM_SERVER_CONTAINER = 'TC_LOAD_GTM_FROM_SERVER_CONTAINER';
+
+    public const GA4_CLIENT_ACTIVATION_PATH = 'TC_GA4_CLIENT_ACTIVATION_PATH';
+
+    public const GTM_SERVER_PREVIEW_HEADER = 'TC_GTM_SERVER_PREVIEW_HEADER';
+
+    public const SERVER_PURCHASE_BACKGROUND = 'TC_SERVER_PURCHASE_BACKGROUND';
+
+    public const ITEM_ID_SOURCE = 'TC_ITEM_ID_SOURCE';
+
+    public const ITEM_ID_PATTERN = 'TC_ITEM_ID_PATTERN';
+
+    public const ITEM_ID_SOURCE_ID = 'id';
+
+    public const ITEM_ID_SOURCE_SKU = 'sku';
+
+    public const ITEM_ID_SOURCE_VARIANT_SKU = 'variant_sku';
+
+    public const ITEM_ID_SOURCE_PATTERN = 'pattern';
     /**
      * @var array
      */
@@ -77,6 +95,16 @@ class ConfigurationVO
             'desc' => 'Paste the second snippet provided by GTM. It will be loaded after opening <body> tag.',
             'required' => true,
         ],
+        self::ITEM_ID_SOURCE => [
+            'type' => 'select',
+            'label' => 'Item ID source',
+            'desc' => 'Value used as item_id in ecommerce events.',
+        ],
+        self::ITEM_ID_PATTERN => [
+            'type' => 'text',
+            'label' => 'Item ID pattern',
+            'desc' => 'Pattern used when item id source is set to a custom pattern. Placeholders: {id}, {variant_id}, {sku}, {variant_sku}.',
+        ],
         self::DEBUG => [
             'type' => 'switch',
             'label' => 'Debug',
@@ -100,6 +128,23 @@ class ConfigurationVO
     public static function getFields(): array
     {
         return static::$fields;
+    }
+
+    public static function getItemIdSources(): array
+    {
+        return [
+            self::ITEM_ID_SOURCE_ID,
+            self::ITEM_ID_SOURCE_SKU,
+            self::ITEM_ID_SOURCE_VARIANT_SKU,
+            self::ITEM_ID_SOURCE_PATTERN,
+        ];
+    }
+
+    public static function getServerEvents(): array
+    {
+        return [
+            EcommerceEventVO::PURCHASE => true,
+        ];
     }
 
     public static function getEvents(): array

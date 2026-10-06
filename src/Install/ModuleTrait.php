@@ -4,6 +4,7 @@ namespace PrestaShop\Module\TagConciergeFree\Install;
 
 use Configuration as PrestaShopConfiguration;
 use PrestaShop\Module\TagConciergeFree\Hook\Event\AbstractEcommerceEventHook;
+use PrestaShop\Module\TagConciergeFree\Hook\FrontendAssetsHook;
 use PrestaShop\Module\TagConciergeFree\Hook\HookProvider;
 use PrestaShop\Module\TagConciergeFree\ValueObject\ConfigurationVO;
 use PrestaShopLogger;
@@ -69,6 +70,16 @@ trait ModuleTrait
         $this->context->smarty->assign('is_pro', $this->pro ? 'true' : 'false');
         $this->context->smarty->assign('module_name', $this->displayName);
         $this->context->smarty->assign('module_version', $this->version);
+        $cronToken = (string) PrestaShopConfiguration::get(ConfigurationVO::INSTANCE_UUID);
+        $this->context->smarty->assign(
+            'server_purchase_cron_url',
+            $this->context->link->getModuleLink($this->name, 'cron', ['token' => $cronToken], true)
+        );
+        $settingsJs = dirname(static::MODULE_FILE) . '/views/js/admin-settings.js';
+        $this->context->smarty->assign(
+            'settings_js_version',
+            is_readable($settingsJs) ? filemtime($settingsJs) : $this->version
+        );
 
         return $this->render('admin/configure.tpl');
     }
@@ -120,6 +131,20 @@ trait ModuleTrait
             static::MODULE_FILE,
             $path
         );
+    }
+
+    /**
+     * Real method so the product array reference survives. __call() receives arguments by value.
+     *
+     * @param array $params
+     */
+    public function hookActionGetProductPropertiesAfter(array $params)
+    {
+        if (false === $this->isModuleActive()) {
+            return;
+        }
+
+        $this->hookProvider->provide(FrontendAssetsHook::class)->addItemIdReferences($params);
     }
 
     public function __call(string $name, array $arguments)
